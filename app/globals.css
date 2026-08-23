@@ -74,3 +74,46 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* 3D Flipbook CSS Utilities */
+.perspective-container {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Custom shadow/depth overlays */
+.book-spine-shadow {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0) 10%,
+    rgba(0, 0, 0, 0.05) 50%,
+    rgba(0, 0, 0, 0) 90%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+}
+
+.page-shadow-left {
+  background: linear-gradient(to left, rgba(91, 70, 54, 0.15) 0%, transparent 100%);
+}
+
+.page-shadow-right {
+  background: linear-gradient(to right, rgba(91, 70, 54, 0.15) 0%, transparent 100%);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+

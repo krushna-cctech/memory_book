@@ -8,9 +8,10 @@ import { SparklesDoodle, HeartDoodle } from "../../ui/Doodles";
 
 interface GoodbyeLetterProps {
   data: GoodbyeLetterData;
+  hideSignatures?: boolean;
 }
 
-export const GoodbyeLetter = ({ data }: GoodbyeLetterProps) => {
+export const GoodbyeLetter = ({ data, hideSignatures = false }: GoodbyeLetterProps) => {
   const [opened, setOpened] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -83,23 +84,27 @@ export const GoodbyeLetter = ({ data }: GoodbyeLetterProps) => {
               </p>
               
               {/* Signatures collage */}
-              <div className="grid grid-cols-3 gap-y-1.5 gap-x-4 select-none pr-8">
-                {data.signatures.map((sig, idx) => {
-                  const tilts = ["rotate-[-3deg]", "rotate-[2deg]", "rotate-[-1deg]", "rotate-[4deg]"];
-                  const tiltClass = tilts[idx % tilts.length];
-                  return (
-                    <span
-                      key={idx}
-                      className={`font-handwritten text-base md:text-lg text-accent font-extrabold ${tiltClass}`}
-                    >
-                      {sig}
-                    </span>
-                  );
-                })}
-              </div>
+              {!hideSignatures && (
+                <div className="grid grid-cols-3 gap-y-1.5 gap-x-4 select-none pr-8">
+                  {data.signatures.map((sig, idx) => {
+                    const tilts = ["rotate-[-3deg]", "rotate-[2deg]", "rotate-[-1deg]", "rotate-[4deg]"];
+                    const tiltClass = tilts[idx % tilts.length];
+                    return (
+                      <span
+                        key={idx}
+                        className={`font-handwritten text-base md:text-lg text-accent font-extrabold ${tiltClass}`}
+                      >
+                        {sig}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Heart Doodle near signatures */}
-              <HeartDoodle className="absolute bottom-1 right-2 text-accent/40 pointer-events-none" size={28} rotation={8} />
+              {!hideSignatures && (
+                <HeartDoodle className="absolute bottom-1 right-2 text-accent/40 pointer-events-none" size={28} rotation={8} />
+              )}
             </div>
 
             {/* Close letter option */}

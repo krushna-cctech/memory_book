@@ -25,7 +25,7 @@ export const BookCover = ({ data, onOpen, isOpen }: BookCoverProps) => {
       initial="hidden"
       animate="visible"
       variants={shouldReduceMotion ? {} : staggerContainer(0.12, 0.1)}
-      className="relative w-full max-w-lg mx-auto bg-card border-8 border-double border-primary/95 shadow-[12px_12px_36px_rgba(91,70,54,0.22)] rounded-2xl p-8 md:p-12 text-center overflow-hidden flex flex-col justify-between min-h-[580px] select-none"
+      className="relative w-full h-full bg-card border-8 border-double border-primary/95 rounded-r-md p-6 md:p-10 text-center overflow-hidden flex flex-col justify-between select-none"
     >
       {/* Decorative background paper details */}
       <div className="absolute inset-0 paper-grain pointer-events-none" />

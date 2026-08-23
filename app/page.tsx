@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Avatar } from "@/components/avatar/Avatar";
 import { AvatarFrame } from "@/components/avatar/AvatarFrame";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/layout/Container";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { farewell } from "@/data/farewell";
@@ -153,14 +152,14 @@ export default function Home() {
               variants={shouldReduceMotion ? {} : fadeUp(0.6)}
               className="py-2"
             >
-              <AvatarFrame variant="polaroid">
+              <AvatarFrame variant="polaroid" className="max-w-[260px] md:max-w-[320px]">
                 <Avatar 
                   src={teammate.avatar} 
                   name={teammate.name} 
                   size="xl" 
-                  className="rounded-none border-none shadow-none w-28 h-28" 
+                  className="rounded-none border-none shadow-none w-44 h-44 md:w-56 md:h-56" 
                 />
-                <div className="mt-3 font-serif text-[10px] font-bold text-primary/70 tracking-widest uppercase select-none">
+                <div className="mt-4 font-handwritten text-xl md:text-2xl text-accent font-bold select-none rotate-[-1.5deg] px-2 tracking-wide">
                   {teammate.name}
                 </div>
               </AvatarFrame>
@@ -168,7 +167,7 @@ export default function Home() {
 
             {/* 4. Dedication Details */}
             <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.65)} className="space-y-1.5">
-              <h1 className="font-serif text-2xl md:text-3xl text-primary font-black uppercase tracking-wide">
+              <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-primary font-black uppercase tracking-wider">
                 {teammate.name}
               </h1>
               {teammate.joiningYear && teammate.leavingYear && (
@@ -188,16 +187,13 @@ export default function Home() {
 
             {/* 6. Navigation Button */}
             <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.75)} className="pt-2">
-              <Link href="/farewell" passHref legacyBehavior>
-                <Button 
-                  variant="primary" 
-                  size="lg"
-                  className="font-serif text-xs uppercase tracking-widest px-8 py-4 group"
-                  aria-label="Open the memory book"
-                >
-                  Open the Book 
-                  <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 ml-2 font-sans" aria-hidden="true">&rarr;</span>
-                </Button>
+              <Link 
+                href="/farewell" 
+                className="inline-flex items-center justify-center font-serif font-semibold transition-all duration-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 cursor-pointer active:scale-95 bg-primary text-card border-2 border-primary hover:bg-transparent hover:text-primary shadow-[2px_2px_0px_rgba(91,70,54,1)] hover:shadow-none translate-y-0 active:translate-y-[2px] active:shadow-none font-serif text-xs uppercase tracking-widest px-8 py-4 group"
+                aria-label="Open the memory book"
+              >
+                Open the Book 
+                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 ml-2 font-sans" aria-hidden="true">&rarr;</span>
               </Link>
             </motion.div>
           </motion.div>

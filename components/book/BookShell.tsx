@@ -72,6 +72,44 @@ export const BookShell = ({ data }: BookShellProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Keyboard navigation for page flipping (Arrow keys / PageUp / PageDown / Escape)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore keypresses inside inputs
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowRight" || event.key === "PageDown") {
+        if (isMobile) {
+          handleMobileNext();
+        } else {
+          handleNext();
+        }
+      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        if (isMobile) {
+          handleMobilePrev();
+        } else {
+          handlePrev();
+        }
+      } else if (event.key === "Escape") {
+        if (isMobile) {
+          setMobilePageDirection(-1);
+          setActiveMobilePageIndex(0);
+          syncMobileTab(0);
+        } else {
+          handleSpreadChange(0);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobile, activeSpreadIndex, activeMobilePageIndex]);
+
   // Synchronize tabs when user clicks a chapter link
   const handleChapterSelect = (id: string) => {
     setActiveChapterId(id);

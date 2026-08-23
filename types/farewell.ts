@@ -37,6 +37,7 @@ export interface MemoryCard {
   title: string;
   description: string;
   image?: string;
+  video?: string;
   category: string;
 }
 

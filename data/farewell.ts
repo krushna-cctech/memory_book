@@ -8,7 +8,7 @@ export const farewell: Farewell = {
     name: "Riyaelza Pappachen",
     role: "Senior Software Engineer",
     department: "Engineering",
-    avatar: "/avatars/placeholder-avatar.svg",
+    avatar: "/avatars/placeholder-avatar.png",
     joiningYear: 2022,
     leavingYear: 2026,
     shortIntro: "Four years of work, laughter, chaos and memories."
@@ -60,7 +60,7 @@ export const farewell: Farewell = {
   beginning: {
     date: "August 15, 2022",
     story: "It was a sunny Tuesday when Riyaelza walked into our office. Armed with a mug of coffee and a notebook, she navigated the onboarding chaos with absolute grace. Within 48 hours, she had set up her local development environment, resolved a blocking git merge conflict that had baffled three senior developers, and made her very first commit. From that first commit, we knew she wasn't just joining our team—she was about to define how we build code.",
-    image: "/avatars/placeholder-avatar.svg",
+    image: "/avatars/placeholder-avatar.png",
     caption: "Riyaelza on Day One: Coffee in hand, ready to merge."
   },
 
@@ -100,7 +100,8 @@ export const farewell: Farewell = {
       id: "mem-1",
       title: "3:00 AM Firefighting",
       description: "When the server crashed on Black Friday, Riyaelza stayed on the call, typing code while eating cold pizza and sharing memes.",
-      category: "Chaos"
+      category: "Chaos",
+      image: "/memories/Image (1).jpg"
     },
     {
       id: "mem-2",
@@ -112,13 +113,78 @@ export const farewell: Farewell = {
       id: "mem-3",
       title: "UI Overhaul Wins",
       description: "Designed and built the new dark mode toggle in a single afternoon because 'the white background was burning my retinas'.",
-      category: "Wins"
+      category: "Wins",
+      video: "/memories/MicrosoftTeams-video.mp4"
     },
     {
       id: "mem-4",
       title: "Coffee Machine Takeover",
       description: "Configured a Slack bot to notify the engineering team whenever fresh espresso was brewed. Productivity surged by 200%.",
-      category: "Daily Life"
+      category: "Daily Life",
+      image: "/memories/Image (2).jpg"
+    },
+    {
+      id: "mem-5",
+      title: "Team Outing",
+      description: "A wonderful day spent with the team sharing laughs and making memories.",
+      category: "Team",
+      image: "/memories/Image (3).jpg"
+    },
+    {
+      id: "mem-6",
+      title: "Office Fun",
+      description: "Capturing the little moments of joy and focus in the workplace.",
+      category: "Daily Life",
+      image: "/memories/Image (4).jpg"
+    },
+    {
+      id: "mem-7",
+      title: "Collaborative Coding",
+      description: "Working together to solve complex architectural challenges and design systems.",
+      category: "Wins",
+      image: "/memories/Image (5).jpg"
+    },
+    {
+      id: "mem-8",
+      title: "Group Photo",
+      description: "The entire group gathered together to celebrate milestones and farewells.",
+      category: "Team",
+      image: "/memories/img.jpg"
+    },
+    {
+      id: "mem-9",
+      title: "Shared Moments",
+      description: "Moments of laughter and support shared during project launches.",
+      category: "Shared",
+      image: "/memories/shared image.jpg"
+    },
+    {
+      id: "mem-10",
+      title: "Celebrating Milestones",
+      description: "Marking another successful quarter and raising a toast to teamwork.",
+      category: "Wins",
+      image: "/memories/shared image (1).jpg"
+    },
+    {
+      id: "mem-11",
+      title: "Late Night Syncs",
+      description: "Late-night standups and sync calls where we got everything lined up.",
+      category: "Daily Life",
+      image: "/memories/shared image (2).jpg"
+    },
+    {
+      id: "mem-12",
+      title: "Lunch Breaks",
+      description: "Enjoying good food and conversations during our afternoon breaks.",
+      category: "Daily Life",
+      image: "/memories/shared image (3).jpg"
+    },
+    {
+      id: "mem-13",
+      title: "Final Farewell",
+      description: "Saying goodbye to a stellar team member and wishing her the best.",
+      category: "Farewell",
+      image: "/memories/shared image (4).jpg"
     }
   ],
 

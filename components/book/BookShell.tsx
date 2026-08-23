@@ -33,12 +33,39 @@ export const BookShell = ({ data }: BookShellProps) => {
   const [mobilePageDirection, setMobilePageDirection] = useState(1);
   const [activeChapterId, setActiveChapterId] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [isLeftHovered, setIsLeftHovered] = useState(false);
+  const [isRightHovered, setIsRightHovered] = useState(false);
+  const [scale, setScale] = useState(1);
   const shouldReduceMotion = useReducedMotion();
 
-  // Detect screen size for responsive layouts
+  // Audio trigger for realistic physical page-flip sound
+  const playPageTurnSound = () => {
+    try {
+      const audio = new Audio("https://www.soundjay.com/misc/sounds/page-turn-3.mp3");
+      audio.volume = 0.35;
+      audio.play().catch((err) => {
+        console.log("Audio play blocked by browser autoplay policy.");
+      });
+    } catch (err) {
+      console.warn("Audio creation failed:", err);
+    }
+  };
+
+  // Detect screen size and compute responsive scaling factor for desktop flipbook
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        // Target dimensions for full desktop spread including nav and margins
+        const padWidth = 940;
+        const padHeight = 780;
+        const scaleX = window.innerWidth / padWidth;
+        const scaleY = window.innerHeight / padHeight;
+        setScale(Math.min(scaleX, scaleY, 1.0));
+      } else {
+        setScale(1.0);
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -79,6 +106,7 @@ export const BookShell = ({ data }: BookShellProps) => {
   // Sync state for desktop spread flipping
   const handleSpreadChange = (newSpread: number) => {
     setActiveSpreadIndex(newSpread);
+    playPageTurnSound();
     if (newSpread === 0) {
       setActiveChapterId("cover");
     } else if (newSpread === 1) {
@@ -112,6 +140,7 @@ export const BookShell = ({ data }: BookShellProps) => {
   const handleMobileNext = () => {
     if (activeMobilePageIndex < 9) {
       setMobilePageDirection(1);
+      playPageTurnSound();
       setActiveMobilePageIndex((prev) => {
         const next = prev + 1;
         syncMobileTab(next);
@@ -123,6 +152,7 @@ export const BookShell = ({ data }: BookShellProps) => {
   const handleMobilePrev = () => {
     if (activeMobilePageIndex > 0) {
       setMobilePageDirection(-1);
+      playPageTurnSound();
       setActiveMobilePageIndex((prev) => {
         const next = prev - 1;
         syncMobileTab(next);
@@ -147,9 +177,20 @@ export const BookShell = ({ data }: BookShellProps) => {
   // Z-indexing and rotation calculations for sheets (Desktop)
   const getSheetStyle = (index: number) => {
     const isFlipped = index < activeSpreadIndex;
+    let rotation = isFlipped ? -180 : 0;
+
+    // Subtle 3D page corner lift on margin hover
+    if (!shouldReduceMotion) {
+      if (index === activeSpreadIndex - 1 && isLeftHovered) {
+        rotation = -172;
+      } else if (index === activeSpreadIndex && isRightHovered) {
+        rotation = -8;
+      }
+    }
+
     const zIndex = isFlipped ? index : 5 - index;
     return {
-      transform: isFlipped ? "rotateY(-180deg)" : "rotateY(0deg)",
+      transform: `rotateY(${rotation}deg)`,
       zIndex: zIndex,
     };
   };
@@ -440,32 +481,29 @@ export const BookShell = ({ data }: BookShellProps) => {
   ];
 
   return (
-    <div className="relative w-full min-h-screen py-6 md:py-10 flex flex-col justify-center items-center overflow-hidden">
-      <Container className="flex-grow flex flex-col justify-between max-w-5xl z-10 px-4 md:px-6">
-        
-        {/* Top Header Navigation Section (Only shown when book is open) */}
-        <div className={cn(
-          "w-full flex flex-col items-center space-y-3 mb-6 transition-all duration-500",
-          isMobile 
-            ? (activeMobilePageIndex > 0 && activeMobilePageIndex < 9 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0")
-            : (activeSpreadIndex > 0 && activeSpreadIndex < 5 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0")
-        )}>
-          <ChapterNavigation
-            chapters={data.chapters}
-            activeChapterId={activeChapterId}
-            onChapterSelect={handleChapterSelect}
-          />
-          <BookProgress
-            totalChaptersCount={data.chapters.length}
-            currentChapterNumber={currentChapterNumber}
-          />
-        </div>
-
-        {/* Main interactive 3D Book Viewport */}
-        <div className="flex-grow w-full flex items-center justify-center py-2 relative">
+    <div className="relative w-full min-h-screen py-4 flex flex-col justify-center items-center overflow-hidden bg-[#FAF6EE] paper-grain">
+      {isMobile ? (
+        /* --- MOBILE VIEW (renders direct, non-scaled layout) --- */
+        <Container className="flex-grow flex flex-col justify-between max-w-sm z-10 px-4 py-4 min-h-[100svh] relative">
           
-          {isMobile ? (
-            /* --- MOBILE VIEW (Single Page Card Flip) --- */
+          {/* Mobile Top Header Navigation */}
+          <div className={cn(
+            "w-full flex flex-col items-center space-y-3 mb-4 transition-all duration-500",
+            activeMobilePageIndex > 0 && activeMobilePageIndex < 9 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0"
+          )}>
+            <ChapterNavigation
+              chapters={data.chapters}
+              activeChapterId={activeChapterId}
+              onChapterSelect={handleChapterSelect}
+            />
+            <BookProgress
+              totalChaptersCount={data.chapters.length}
+              currentChapterNumber={currentChapterNumber}
+            />
+          </div>
+
+          {/* Mobile main viewport */}
+          <div className="flex-grow w-full flex items-center justify-center py-2 relative">
             <div className="w-full max-w-sm mx-auto overflow-hidden relative min-h-[480px] flex items-center justify-center">
               <AnimatePresence initial={false} custom={mobilePageDirection} mode="wait">
                 <motion.div
@@ -481,127 +519,11 @@ export const BookShell = ({ data }: BookShellProps) => {
                 </motion.div>
               </AnimatePresence>
             </div>
-          ) : (
-            /* --- DESKTOP VIEW (Realistic 3D Double-Page Flipbook) --- */
-            <div className="perspective-container relative w-full h-[610px] flex items-center justify-center select-none">
-              
-              {/* Shifting book viewport (moves cover to center when closed, open spreads to fill center) */}
-              <div 
-                className={cn(
-                  "relative w-[840px] h-[580px] transition-transform duration-[850ms] ease-in-out preserve-3d",
-                  activeSpreadIndex === 0 
-                    ? "translate-x-[-25%]" 
-                    : activeSpreadIndex === 5 
-                    ? "translate-x-[25%]" 
-                    : "translate-x-0"
-                )}
-              >
-                {/* 1. Physical leather back cover boards lying flat */}
-                <div 
-                  className={cn(
-                    "absolute top-[-6px] left-[-6px] w-[50.5%] h-[592px] bg-[#422F24] border-2 border-[#2E2018] rounded-l-xl shadow-2xl transition-all duration-[850ms] ease-in-out -z-30 origin-right",
-                    activeSpreadIndex === 0 ? "opacity-0 scale-95" : "opacity-100 scale-100"
-                  )}
-                />
-                <div 
-                  className={cn(
-                    "absolute top-[-6px] right-[-6px] w-[50.5%] h-[592px] bg-[#422F24] border-2 border-[#2E2018] rounded-r-xl shadow-2xl transition-all duration-[850ms] ease-in-out -z-30 origin-left",
-                    activeSpreadIndex === 5 ? "opacity-0 scale-95" : "opacity-100 scale-100"
-                  )}
-                />
+          </div>
 
-                {/* 2. Paper stacked edge thickness templates */}
-                {/* Left side thickness */}
-                <div 
-                  className={cn(
-                    "absolute top-0 left-0 w-1/2 h-full bg-card border-l-4 border-y border-secondary/40 rounded-l transition-all duration-[850ms] -z-10",
-                    activeSpreadIndex <= 1 ? "opacity-0 translate-x-4" : "opacity-100 translate-x-0"
-                  )}
-                  style={{
-                    boxShadow: "inset -1px 0 3px rgba(0,0,0,0.05), -2px 2px 4px rgba(91,70,54,0.1), -3px 3px 0px #FAF8F5, -6px 6px 0px #E7DEC6"
-                  }}
-                />
-                {/* Right side thickness */}
-                <div 
-                  className={cn(
-                    "absolute top-0 right-0 w-1/2 h-full bg-card border-r-4 border-y border-secondary/40 rounded-r transition-all duration-[850ms] -z-10",
-                    activeSpreadIndex >= 4 ? "opacity-0 -translate-x-4" : "opacity-100 translate-x-0"
-                  )}
-                  style={{
-                    boxShadow: "inset 1px 0 3px rgba(0,0,0,0.05), 2px 2px 4px rgba(91,70,54,0.1), 3px 3px 0px #FAF8F5, 6px 6px 0px #E7DEC6"
-                  }}
-                />
-
-                {/* 3. Render 3D physical sheets */}
-                {sheets.map((sheet, index) => (
-                  <div
-                    key={index}
-                    className="absolute top-0 left-1/2 w-1/2 h-full origin-left preserve-3d transition-transform duration-[850ms] ease-in-out"
-                    style={getSheetStyle(index)}
-                  >
-                    {/* Front Face (Facing right initially) */}
-                    <div className="absolute inset-0 w-full h-full backface-hidden bg-card border-l border-secondary/20 shadow-inner p-6 md:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-r-sm">
-                      {sheet.front}
-                      {index > 0 && index < 4 && (
-                        <div className="absolute bottom-3 right-4 text-[9px] text-muted/30 font-mono select-none">
-                          PAGE {String(index * 2).padStart(2, "0")}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Back Face (Facing left when sheet is flipped) */}
-                    <div 
-                      className="absolute inset-0 w-full h-full backface-hidden bg-card border-r border-secondary/20 shadow-inner p-6 md:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-l-sm"
-                      style={{ transform: "rotateY(180deg)" }}
-                    >
-                      {sheet.back}
-                      {index >= 0 && index < 4 && (
-                        <div className="absolute bottom-3 left-4 text-[9px] text-muted/30 font-mono select-none">
-                          PAGE {String(index * 2 + 1).padStart(2, "0")}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                {/* 4. Book spine and central shadow */}
-                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-3.5 bg-[#2A1E17] shadow-inner z-20 book-spine-shadow pointer-events-none" />
-
-                {/* 5. Clickable margins overlays for quick 3D flipping */}
-                {/* Left page margin click */}
-                {activeSpreadIndex > 0 && (
-                  <div 
-                    className="absolute top-0 left-0 w-[14%] h-full z-30 cursor-w-resize group"
-                    onClick={handlePrev}
-                    title="Previous Page"
-                  >
-                    <div className="absolute top-1/2 left-3 -translate-y-1/2 bg-card/90 border border-secondary p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                      <ChevronLeft size={14} className="text-primary" />
-                    </div>
-                  </div>
-                )}
-                {/* Right page margin click */}
-                {activeSpreadIndex < 5 && (
-                  <div 
-                    className="absolute top-0 right-0 w-[14%] h-full z-30 cursor-e-resize group"
-                    onClick={handleNext}
-                    title="Next Page"
-                  >
-                    <div className="absolute top-1/2 right-3 -translate-y-1/2 bg-card/90 border border-secondary p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                      <ChevronRight size={14} className="text-primary" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Pagination Control Section */}
-        {isMobile ? (
-          /* Mobile page controls */
-          activeMobilePageIndex > 0 && (
-            <div className="mt-4 flex items-center justify-between w-full max-w-xs mx-auto px-4 z-20 select-none">
+          {/* Mobile Bottom controls */}
+          {activeMobilePageIndex > 0 && (
+            <div className="mt-4 flex items-center justify-between w-full max-w-xs mx-auto px-2 z-20 select-none">
               <button
                 onClick={handleMobilePrev}
                 className="font-serif text-[11px] uppercase tracking-wider text-primary/60 hover:text-accent font-black transition-colors cursor-pointer"
@@ -624,11 +546,171 @@ export const BookShell = ({ data }: BookShellProps) => {
                 Next &rarr;
               </button>
             </div>
-          )
-        ) : (
-          /* Desktop page controls */
-          activeSpreadIndex > 0 && (
-            <div className="mt-4 flex items-center justify-between w-full max-w-md mx-auto px-4 z-20 select-none">
+          )}
+        </Container>
+      ) : (
+        /* --- DESKTOP VIEW (wrapped in a scaled container) --- */
+        <div 
+          className="flex flex-col justify-between items-center w-[900px] h-[720px] transition-transform duration-300 origin-center select-none py-2"
+          style={{ 
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+            marginTop: `${((scale - 1) * 720) / 2}px`,
+            marginBottom: `${((scale - 1) * 720) / 2}px`,
+            marginLeft: `${((scale - 1) * 900) / 2}px`,
+            marginRight: `${((scale - 1) * 900) / 2}px`,
+          }}
+        >
+          {/* Top Header Navigation Section (Only shown when book is open) */}
+          <div className={cn(
+            "w-full flex flex-col items-center space-y-3 mb-2 transition-all duration-500",
+            activeSpreadIndex > 0 && activeSpreadIndex < 5 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0"
+          )}>
+            <ChapterNavigation
+              chapters={data.chapters}
+              activeChapterId={activeChapterId}
+              onChapterSelect={handleChapterSelect}
+            />
+            <BookProgress
+              totalChaptersCount={data.chapters.length}
+              currentChapterNumber={currentChapterNumber}
+            />
+          </div>
+
+          {/* Main interactive 3D Book Viewport */}
+          <div className="flex-grow w-full flex items-center justify-center relative">
+            <div 
+              className={cn(
+                "relative w-[840px] h-[580px] transition-transform duration-[850ms] ease-in-out preserve-3d",
+                activeSpreadIndex === 0 
+                  ? "translate-x-[-25%]" 
+                  : activeSpreadIndex === 5 
+                  ? "translate-x-[25%]" 
+                  : "translate-x-0"
+              )}
+            >
+              {/* 1. Physical leather back cover boards lying flat */}
+              <div 
+                className={cn(
+                  "absolute top-[-6px] left-[-6px] w-[50.5%] h-[592px] bg-[#422F24] border-2 border-[#2E2018] rounded-l-xl shadow-2xl transition-all duration-[850ms] ease-in-out -z-30 origin-right overflow-hidden",
+                  activeSpreadIndex === 0 ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                )}
+              >
+                {/* Vintage Gold Corners */}
+                <div className="absolute top-0 left-0 w-5 h-5 border-t-[3px] border-l-[3px] border-[#D4AF37]/60 rounded-tl-md pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-5 h-5 border-b-[3px] border-l-[3px] border-[#D4AF37]/60 rounded-bl-md pointer-events-none" />
+              </div>
+              <div 
+                className={cn(
+                  "absolute top-[-6px] right-[-6px] w-[50.5%] h-[592px] bg-[#422F24] border-2 border-[#2E2018] rounded-r-xl shadow-2xl transition-all duration-[850ms] ease-in-out -z-30 origin-left overflow-hidden",
+                  activeSpreadIndex === 5 ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                )}
+              >
+                {/* Vintage Gold Corners */}
+                <div className="absolute top-0 right-0 w-5 h-5 border-t-[3px] border-r-[3px] border-[#D4AF37]/60 rounded-tr-md pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-5 h-5 border-b-[3px] border-r-[3px] border-[#D4AF37]/60 rounded-br-md pointer-events-none" />
+              </div>
+
+              {/* 2. Paper stacked edge thickness templates */}
+              {/* Left side thickness */}
+              <div 
+                className={cn(
+                  "absolute top-0 left-0 w-1/2 h-full bg-card border-l-4 border-y border-secondary/40 rounded-l transition-all duration-[850ms] -z-10",
+                  activeSpreadIndex <= 1 ? "opacity-0 translate-x-4" : "opacity-100 translate-x-0"
+                )}
+                style={{
+                  boxShadow: "inset -1px 0 3px rgba(0,0,0,0.05), -2px 2px 4px rgba(91,70,54,0.1), -3px 3px 0px #FAF8F5, -6px 6px 0px #E7DEC6"
+                }}
+              />
+              {/* Right side thickness */}
+              <div 
+                className={cn(
+                  "absolute top-0 right-0 w-1/2 h-full bg-card border-r-4 border-y border-secondary/40 rounded-r transition-all duration-[850ms] -z-10",
+                  activeSpreadIndex >= 4 ? "opacity-0 -translate-x-4" : "opacity-100 translate-x-0"
+                )}
+                style={{
+                  boxShadow: "inset 1px 0 3px rgba(0,0,0,0.05), 2px 2px 4px rgba(91,70,54,0.1), 3px 3px 0px #FAF8F5, 6px 6px 0px #E7DEC6"
+                }}
+              />
+
+              {/* 3. Render 3D physical sheets */}
+              {sheets.map((sheet, index) => (
+                <div
+                  key={index}
+                  className="absolute top-0 left-1/2 w-1/2 h-full origin-left preserve-3d transition-transform duration-[850ms] ease-in-out"
+                  style={getSheetStyle(index)}
+                >
+                  {/* Front Face (Facing right initially) */}
+                  <div className="absolute inset-0 w-full h-full backface-hidden bg-card border-l border-secondary/20 shadow-inner p-6 md:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-r-sm">
+                    {sheet.front}
+                    {index > 0 && index < 4 && (
+                      <div className="absolute bottom-3 right-4 text-[9px] text-muted/30 font-mono select-none">
+                        PAGE {String(index * 2).padStart(2, "0")}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Back Face (Facing left when sheet is flipped) */}
+                  <div 
+                    className="absolute inset-0 w-full h-full backface-hidden bg-card border-r border-secondary/20 shadow-inner p-6 md:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-l-sm"
+                    style={{ transform: "rotateY(180deg)" }}
+                  >
+                    {sheet.back}
+                    {index >= 0 && index < 4 && (
+                      <div className="absolute bottom-3 left-4 text-[9px] text-muted/30 font-mono select-none">
+                        PAGE {String(index * 2 + 1).padStart(2, "0")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* 4. Book spine and central shadow */}
+              <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-3.5 bg-[#2A1E17] shadow-inner z-20 book-spine-shadow pointer-events-none" />
+
+              {/* 5. Clickable margins overlays for quick 3D flipping */}
+              {/* Left page margin click */}
+              {activeSpreadIndex > 0 && (
+                <div 
+                  className="absolute top-0 left-0 w-[14%] h-full z-30 cursor-w-resize group preserve-3d"
+                  style={{ transform: "translateZ(50px)" }}
+                  onClick={() => {
+                    handlePrev();
+                    setIsLeftHovered(false);
+                  }}
+                  onMouseEnter={() => setIsLeftHovered(true)}
+                  onMouseLeave={() => setIsLeftHovered(false)}
+                  title="Previous Page"
+                >
+                  <div className="absolute top-1/2 left-3 -translate-y-1/2 bg-card/90 border border-secondary p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <ChevronLeft size={14} className="text-primary" />
+                  </div>
+                </div>
+              )}
+              {/* Right page margin click */}
+              {activeSpreadIndex < 5 && (
+                <div 
+                  className="absolute top-0 right-0 w-[14%] h-full z-30 cursor-e-resize group preserve-3d"
+                  style={{ transform: "translateZ(50px)" }}
+                  onClick={() => {
+                    handleNext();
+                    setIsRightHovered(false);
+                  }}
+                  onMouseEnter={() => setIsRightHovered(true)}
+                  onMouseLeave={() => setIsRightHovered(false)}
+                  title="Next Page"
+                >
+                  <div className="absolute top-1/2 right-3 -translate-y-1/2 bg-card/90 border border-secondary p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <ChevronRight size={14} className="text-primary" />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Pagination Control Section */}
+          {activeSpreadIndex > 0 && (
+            <div className="mt-2 flex items-center justify-between w-full max-w-md px-4 z-20 select-none">
               <button
                 onClick={handlePrev}
                 className="font-serif text-[11px] uppercase tracking-wider text-primary/60 hover:text-accent font-black transition-all duration-300 cursor-pointer flex items-center space-x-1"
@@ -651,9 +733,9 @@ export const BookShell = ({ data }: BookShellProps) => {
                 Next Spread &rarr;
               </button>
             </div>
-          )
-        )}
-      </Container>
+          )}
+        </div>
+      )}
     </div>
   );
 };

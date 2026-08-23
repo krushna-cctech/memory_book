@@ -25,7 +25,8 @@ export const BookCover = ({ data, onOpen, isOpen }: BookCoverProps) => {
       initial="hidden"
       animate="visible"
       variants={shouldReduceMotion ? {} : staggerContainer(0.12, 0.1)}
-      className="relative w-full h-full bg-card border-8 border-double border-primary/95 rounded-r-md p-6 md:p-10 text-center overflow-hidden flex flex-col justify-between select-none"
+      className={`relative w-full h-full bg-card border-8 border-double border-primary/95 rounded-r-md p-4 md:p-6 md:pb-5 text-center overflow-hidden flex flex-col justify-between select-none ${!isOpen ? "cursor-pointer hover:bg-card/95 transition-colors" : ""}`}
+      onClick={!isOpen ? onOpen : undefined}
     >
       {/* Decorative background paper details */}
       <div className="absolute inset-0 paper-grain pointer-events-none" />
@@ -35,7 +36,7 @@ export const BookCover = ({ data, onOpen, isOpen }: BookCoverProps) => {
       <div className="absolute top-4 right-4 text-highlight text-lg z-10" aria-hidden="true">✦</div>
       <div className="absolute bottom-4 left-4 text-highlight text-lg z-10" aria-hidden="true">✦</div>
       <div className="absolute bottom-4 right-4 text-highlight text-lg z-10" aria-hidden="true">✦</div>
-
+ 
       {/* Cover Doodles */}
       <PaperclipDoodle
         className="absolute top-2 left-8 text-primary/45 z-20"
@@ -61,48 +62,48 @@ export const BookCover = ({ data, onOpen, isOpen }: BookCoverProps) => {
         rotation={-5}
         delay={1.8}
       />
-
+ 
       {/* Header */}
-      <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.5)} className="z-10 mt-2">
-        <span className="font-serif text-xs md:text-sm tracking-[0.25em] text-accent uppercase font-bold">
+      <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.5)} className="z-10 mt-1">
+        <span className="font-serif text-[10px] md:text-xs tracking-[0.25em] text-accent uppercase font-bold">
           ✦ {title} ✦
         </span>
       </motion.div>
-
+ 
       {/* Portrait block */}
       <motion.div 
         variants={shouldReduceMotion ? {} : fadeUp(0.6)} 
-        className="z-10 my-4 flex flex-col items-center justify-center"
+        className="z-10 my-1 flex flex-col items-center justify-center"
       >
         <AvatarFrame variant="antique">
-          <Avatar src={teammate.avatar} name={teammate.name} size="xl" glow />
+          <Avatar src={teammate.avatar} name={teammate.name} size="lg" glow />
         </AvatarFrame>
       </motion.div>
-
+ 
       {/* Content */}
-      <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.7)} className="z-10 flex-grow flex flex-col justify-center my-4">
-        <h1 className="font-serif text-3xl md:text-4xl text-primary font-extrabold uppercase tracking-wide leading-tight">
+      <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.7)} className="z-10 flex-grow flex flex-col justify-center my-1">
+        <h1 className="font-serif text-xl md:text-2xl text-primary font-extrabold uppercase tracking-wide leading-tight">
           For {teammate.name}
         </h1>
         
         {teammate.joiningYear && teammate.leavingYear && (
-          <p className="font-serif text-xs md:text-sm tracking-[0.2em] text-muted mt-2 font-bold select-none">
+          <p className="font-serif text-[9px] md:text-[10px] tracking-[0.2em] text-muted mt-0.5 font-bold select-none">
             {teammate.joiningYear} &mdash; {teammate.leavingYear}
           </p>
         )}
         
-        <p className="font-handwritten text-2xl md:text-3xl text-accent rotate-[-1.5deg] mt-6 select-none leading-relaxed px-4">
+        <p className="font-handwritten text-lg md:text-xl text-accent rotate-[-1deg] mt-2 select-none leading-relaxed px-4">
           &ldquo;{subtitle}&rdquo;
         </p>
       </motion.div>
-
+ 
       {/* Footer / Open trigger */}
-      <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.8)} className="z-10 mt-6 mb-2">
+      <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.8)} className="z-10 mt-4 mb-1">
         <Button 
           variant="accent" 
-          size="lg" 
+          size="sm" 
           onClick={onOpen}
-          className="font-serif text-sm uppercase tracking-widest px-8 py-3.5"
+          className="font-serif text-[10px] uppercase tracking-widest px-6 py-2"
           aria-label={`Open memory book for ${teammate.name}`}
         >
           Open the Book

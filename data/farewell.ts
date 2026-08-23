@@ -255,13 +255,25 @@ export const farewell: Farewell = {
     ],
     valediction: "With love and gratitude, your teammates,",
     signatures: [
-      "Sarah",
-      "Dave",
-      "Sam",
-      "Alex",
-      "Emily",
-      "Jordan",
-      "Taylor"
+      "Pradnya",
+      "Smitha",
+      "Sagar",
+      "Chetan",
+      "Nikita",
+      "Siddhu",
+      "Shreya",
+      "Ritik",
+      "Subodh",
+      "Abhay",
+      "Pritee",
+      "Priyanka",
+      "Aniket",
+      "Ritul",
+      "Harish",
+      "Lalit",
+      "Ajay",
+      "Ganesh",
+      "Krushna"
     ]
   }
 };

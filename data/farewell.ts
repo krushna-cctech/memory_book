@@ -9,7 +9,7 @@ export const farewell: Farewell = {
     role: "Member of Technical Staff (MTS)",
     department: "Engineering",
     avatar: "/avatars/placeholder-avatar.png",
-    joiningYear: 2022,
+    joiningYear: 2024,
     leavingYear: 2026,
     shortIntro: "Four years of work, laughter, chaos and memories."
   },
@@ -58,40 +58,47 @@ export const farewell: Farewell = {
   ],
 
   beginning: {
-    date: "August 15, 2022",
-    story: "It was a sunny Tuesday when Riyaelza walked into our office. Armed with a mug of coffee and a notebook, she navigated the onboarding chaos with absolute grace. Within 48 hours, she had set up her local development environment, resolved a blocking git merge conflict that had baffled three senior developers, and made her very first commit. From that first commit, we knew she wasn't just joining our team—she was about to define how we build code.",
+    date: "September 2, 2024",
+    story: "It was the 4th floor back then on 2nd Sept 2024. The day began with induction in the conference room post which I was taken to Amol sir's cabin where he briefed me about CCTech & the many departments we have. My desk was assigned within the AEC department's area. Back then I didn't even know I was in AEC  I could meet up with Suraj who interviewed me. This also made a way to get to know many other people on my first day. The sweet gesture from Smita to accompany the team during lunch created a lasting impact in me. Remembering how I answered when Vijay sir asked me about which team I joined, the only answer I could give was, 'Idar baitne wali team' makes me smile even now. As there wasn't anything assigned to me my day ended early!",
     image: "/avatars/placeholder-avatar.png",
-    caption: "Riyaelza on Day One: Coffee in hand, ready to merge."
+    caption: "Riyaelza on Day One"
   },
 
   timeline: [
     {
       id: "m-1",
-      date: "October 2022",
-      title: "The Great Onboarding",
-      description: "Successfully mastered our massive legacy codebase and rewrote the broken authentication flow on her third week.",
-      icon: "Code"
+      date: "September 2, 2024",
+      title: "Taking the First Step & Bridging the CAD Gap",
+      description: "Trusting in God, started on 2nd Sept 2024 without knowing what the days ahead held. Tackled the CAD Domain—not my cup of tea at first—and bridged that gap through great resources and helpful lives around me.",
+      icon: "Layers"
     },
     {
       id: "m-2",
-      date: "June 2023",
-      title: "Promoted to Tech Lead",
-      description: "Spearheaded the migrations to Next.js App Router and Tailwind, boosting app load performance by over 45%.",
-      icon: "Zap"
+      date: "Late 2024",
+      title: "Client Rapport & Freedom to Explore",
+      description: "Established strong rapport with client QA and developers. Met wonderful people on the floor and enjoyed the creative freedom not just to learn, but to practice and experiment with new technologies.",
+      icon: "Handshake"
     },
     {
       id: "m-3",
-      date: "November 2024",
-      title: "The Midnight Outage Hero",
-      description: "Fixed a critical payment database deadlock at 3:15 AM while calmly singing karaoke in the Slack huddle.",
-      icon: "Award"
+      date: "Early 2025",
+      title: "Embracing AI & Discovering a Love for Blogging",
+      description: "Whenever AI is the talk of the room, having valuable insights to contribute! Grateful to the organization for pushing us to adapt, and delighted to take on something loved apart from code: Tech Blogging.",
+      icon: "Bot"
     },
     {
       id: "m-4",
-      date: "January 2026",
-      title: "Mentorship Champion",
-      description: "Successfully mentored four junior developers, creating a legacy of clean code, detailed pull requests, and git sanity.",
-      icon: "Flame"
+      date: "Mid 2025",
+      title: "Historic ReCap Webinar & Team Building",
+      description: "Proudly hosted a milestone webinar on ReCap—the first of its kind in the AEC department. Led engaging team building activities and created unforgettable memories having fun with the team.",
+      icon: "Video"
+    },
+    {
+      id: "m-5",
+      date: "Late 2025 – Present",
+      title: "The Newsletter Wave & Co-Creation",
+      description: "The newsletter wave swept over and pulled me right in! Experienced the joy of managing and building something special together with an extraordinary newsletter team, painting a beautiful journey.",
+      icon: "Newspaper"
     }
   ],
 
@@ -260,6 +267,7 @@ export const farewell: Farewell = {
       "Sagar",
       "Chetan",
       "Nikita",
+      "Shruti",
       "Siddhu",
       "Shreya",
       "Ritik",

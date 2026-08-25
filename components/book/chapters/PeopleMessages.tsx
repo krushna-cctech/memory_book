@@ -26,7 +26,7 @@ export const PeopleMessages = ({ messages }: PeopleMessagesProps) => {
       whileInView="visible"
       viewport={{ once: true }}
       variants={shouldReduceMotion ? {} : staggerContainer(0.08, 0.05)}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full py-1 text-left"
+      className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 w-full py-1 text-left"
     >
       {messages.map((item, index) => {
         const rotationAngle = index % 2 === 0 ? "rotate-[-1deg]" : "rotate-[1deg]";
@@ -39,27 +39,27 @@ export const PeopleMessages = ({ messages }: PeopleMessagesProps) => {
             className="flex pt-2" // Added padding top for the tape overlay overflow
           >
             <div
-              className={`w-full p-4 border-2 rounded-xl flex flex-col justify-between transition-all duration-300 hover:rotate-0 hover:scale-[1.02] transform ${shouldReduceMotion ? "" : rotationAngle} ${styleClass} min-h-[150px] relative`}
+              className={`w-full p-5 md:p-6 border-2 rounded-xl flex flex-col justify-between transition-all duration-300 hover:rotate-0 hover:scale-[1.02] transform ${shouldReduceMotion ? "" : rotationAngle} ${styleClass} min-h-[170px] relative`}
             >
               {/* Tape Doodle on top */}
               <TapeDoodle className="-top-2.5 left-1/2 -translate-x-1/2" rotation={index % 2 === 0 ? -3 : 2} />
 
               {/* Sticky note text content */}
-              <p className="font-handwritten text-sm md:text-base leading-relaxed mb-3">
+              <p className="font-handwritten text-base md:text-lg leading-relaxed mb-4 font-bold">
                 &ldquo;{item.message}&rdquo;
               </p>
 
               {/* Author signature detail */}
-              <div className="flex items-center space-x-2.5 border-t border-current/10 pt-2">
+              <div className="flex items-center space-x-3 border-t border-current/10 pt-2.5">
                 <AvatarPlaceholder
                   name={item.sender}
-                  className="w-7 h-7 text-[10px] bg-current/10 border-none text-inherit font-black"
+                  className="w-8 h-8 text-xs bg-current/10 border-none text-inherit font-black"
                 />
                 <div>
-                  <h4 className="font-serif text-[11px] font-bold leading-none">
+                  <h4 className="font-serif text-xs md:text-sm font-bold leading-none">
                     {item.sender}
                   </h4>
-                  <span className="font-serif text-[9px] opacity-75 mt-0.5 block leading-none">
+                  <span className="font-serif text-[10px] opacity-75 mt-0.5 block leading-none">
                     {item.role}
                   </span>
                 </div>

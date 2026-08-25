@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MemoryCard } from "@/types/farewell";
 import { Badge } from "../../ui/Badge";
@@ -15,6 +16,42 @@ interface MemoriesGridProps {
 export const MemoriesGrid = ({ memories }: MemoriesGridProps) => {
   const shouldReduceMotion = useReducedMotion();
   const [selectedMemory, setSelectedMemory] = useState<MemoryCard | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock scrolling and page flipping while lightbox modal is active
+  useEffect(() => {
+    if (!selectedMemory) return;
+
+    const originalOverflow = document.body.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedMemory(null);
+      } else if (
+        ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", " "].includes(e.key)
+      ) {
+        // Prevent keyboard events from turning book pages or scrolling background
+        e.stopPropagation();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, { capture: true });
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, { capture: true });
+      document.body.style.overflow = originalOverflow;
+      document.body.style.touchAction = originalTouchAction;
+    };
+  }, [selectedMemory]);
 
   return (
     <>
@@ -48,7 +85,7 @@ export const MemoriesGrid = ({ memories }: MemoriesGridProps) => {
               <Card
                 variant={hasMedia ? "polaroid" : "default"}
                 className={`w-full text-left flex flex-col justify-between ${rotationClass} border-secondary/60 bg-card/85 shadow-sm hover:rotate-0 hover:scale-[1.02] transform transition-all duration-300 relative ${
-                  hasMedia ? "p-3 pb-8 cursor-zoom-in" : "p-4 min-h-[140px]"
+                  hasMedia ? "p-3.5 pb-8 cursor-zoom-in" : "p-5 min-h-[160px]"
                 }`}
                 onClick={() => {
                   if (hasMedia) {
@@ -60,10 +97,10 @@ export const MemoriesGrid = ({ memories }: MemoriesGridProps) => {
                   <div>
                     {/* Header: category & index */}
                     <div className="flex justify-between items-start mb-2.5">
-                      <Badge variant="accent" className="font-mono text-[8px] uppercase tracking-widest px-2 py-0.5 font-black">
+                      <Badge variant="accent" className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest px-2 py-0.5 font-black">
                         {item.category}
                       </Badge>
-                      <span className="text-[10px] text-muted/30 font-serif" aria-hidden="true">#0{index + 1}</span>
+                      <span className="text-xs text-muted/30 font-serif" aria-hidden="true">#0{index + 1}</span>
                     </div>
 
                     {/* Media Display inside the card */}
@@ -78,10 +115,10 @@ export const MemoriesGrid = ({ memories }: MemoriesGridProps) => {
                           autoPlay
                         />
                         <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <span className="bg-card/95 text-primary text-[9px] uppercase font-mono tracking-wider px-2 py-1 rounded shadow-sm border border-secondary/40 font-bold">Zoom Video</span>
+                          <span className="bg-card/95 text-primary text-[10px] uppercase font-mono tracking-wider px-2.5 py-1 rounded shadow-sm border border-secondary/40 font-bold">Zoom Video</span>
                         </div>
-                        <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1 text-white/95 backdrop-blur-sm pointer-events-none group-hover:scale-90 transition-transform duration-300">
-                          <Play size={10} className="fill-white ml-0.5" />
+                        <div className="absolute bottom-2 right-2 bg-black/60 rounded-full p-1.5 text-white/95 backdrop-blur-sm pointer-events-none group-hover:scale-90 transition-transform duration-300">
+                          <Play size={12} className="fill-white ml-0.5" />
                         </div>
                       </div>
                     )}
@@ -95,15 +132,15 @@ export const MemoriesGrid = ({ memories }: MemoriesGridProps) => {
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <span className="bg-card/95 text-primary text-[9px] uppercase font-mono tracking-wider px-2 py-1 rounded shadow-sm border border-secondary/40 font-bold">Zoom Photo</span>
+                          <span className="bg-card/95 text-primary text-[10px] uppercase font-mono tracking-wider px-2.5 py-1 rounded shadow-sm border border-secondary/40 font-bold">Zoom Photo</span>
                         </div>
                       </div>
                     )}
 
-                    <h3 className="font-serif text-xs md:text-sm font-bold text-primary mb-1">
+                    <h3 className="font-serif text-sm md:text-base font-bold text-primary mb-1">
                       {item.title}
                     </h3>
-                    <p className="font-serif text-[11px] md:text-xs text-primary/80 leading-relaxed pr-2">
+                    <p className="font-serif text-xs md:text-sm text-primary/80 leading-relaxed pr-2">
                       {item.description}
                     </p>
                   </div>
@@ -152,71 +189,85 @@ export const MemoriesGrid = ({ memories }: MemoriesGridProps) => {
         })}
       </motion.div>
 
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {selectedMemory && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4"
-            onClick={() => setSelectedMemory(null)}
-          >
+      {/* Lightbox Modal rendered via Portal directly in document.body */}
+      {mounted && typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {selectedMemory && (
             <motion.div
-              initial={{ scale: 0.93, y: 15 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.93, y: 15 }}
-              transition={{ type: "spring", duration: 0.4 }}
-              className="relative max-w-2xl w-full bg-card border border-secondary/50 p-5 md:p-6 rounded-lg shadow-2xl flex flex-col"
-              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 select-none"
+              onClick={() => setSelectedMemory(null)}
             >
-              {/* Close Button */}
-              <button
-                className="absolute -top-3 -right-3 text-white bg-primary hover:bg-accent hover:rotate-90 transition-all duration-300 p-2 rounded-full border border-secondary shadow-md cursor-pointer z-10"
-                onClick={() => setSelectedMemory(null)}
-                aria-label="Close lightbox"
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                className="relative max-w-3xl w-full bg-[#FCFAF6] border-4 border-primary/40 p-5 sm:p-7 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto no-scrollbar paper-grain text-left"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
               >
-                <X size={16} />
-              </button>
+                {/* Floating Close Button Top Right */}
+                <button
+                  type="button"
+                  className="absolute top-4 right-4 z-50 p-2 rounded-full bg-primary text-card hover:bg-accent hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg cursor-pointer flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-accent"
+                  onClick={() => setSelectedMemory(null)}
+                  aria-label="Close lightbox"
+                >
+                  <X size={20} className="stroke-[2.5]" />
+                </button>
 
-              {/* Lightbox Media Container */}
-              <div className="w-full aspect-[4/3] max-h-[60vh] rounded bg-secondary/10 overflow-hidden border border-secondary/30 relative flex items-center justify-center">
-                {selectedMemory.video ? (
-                  <video
-                    src={selectedMemory.video}
-                    className="w-full h-full object-contain"
-                    controls
-                    autoPlay
-                    playsInline
-                    loop
-                  />
-                ) : selectedMemory.image ? (
-                  <img
-                    src={selectedMemory.image}
-                    alt={selectedMemory.title}
-                    className="w-full h-full object-contain"
-                  />
-                ) : null}
-              </div>
-
-              {/* Lightbox Metadata */}
-              <div className="mt-4 text-left border-t border-secondary/20 pt-3">
-                <div className="flex items-center space-x-2 mb-1.5">
-                  <Badge variant="accent" className="font-mono text-[8px] uppercase tracking-widest px-2 py-0.5 font-black">
-                    {selectedMemory.category}
-                  </Badge>
+                {/* Lightbox Media Container */}
+                <div className="w-full aspect-[16/10] max-h-[60vh] rounded-xl bg-black/5 border border-secondary/40 overflow-hidden flex items-center justify-center mb-4 relative">
+                  {selectedMemory.video ? (
+                    <video
+                      src={selectedMemory.video}
+                      className="w-full h-full max-h-[60vh] object-contain rounded-lg"
+                      controls
+                      autoPlay
+                      playsInline
+                      loop
+                    />
+                  ) : selectedMemory.image ? (
+                    <img
+                      src={selectedMemory.image}
+                      alt={selectedMemory.title}
+                      className="w-full h-full max-h-[60vh] object-contain rounded-lg shadow-sm"
+                    />
+                  ) : null}
                 </div>
-                <h3 className="font-serif text-sm md:text-base font-bold text-primary mb-1">
-                  {selectedMemory.title}
-                </h3>
-                <p className="font-serif text-xs text-primary/80 leading-relaxed">
-                  {selectedMemory.description}
-                </p>
-              </div>
+
+                {/* Lightbox Metadata & Action */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-secondary/30 pt-4">
+                  <div className="text-left space-y-1 max-w-xl">
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="accent" className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest px-2.5 py-0.5 font-black">
+                        {selectedMemory.category}
+                      </Badge>
+                    </div>
+                    <h3 className="font-serif text-base md:text-lg font-bold text-primary">
+                      {selectedMemory.title}
+                    </h3>
+                    <p className="font-serif text-xs md:text-sm text-primary/80 leading-relaxed">
+                      {selectedMemory.description}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMemory(null)}
+                    className="self-start sm:self-center px-4 py-2 bg-secondary/20 hover:bg-accent hover:text-white text-primary rounded-lg font-serif text-xs uppercase tracking-wider font-bold transition-all duration-200 cursor-pointer flex-shrink-0"
+                  >
+                    Close Preview
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 };

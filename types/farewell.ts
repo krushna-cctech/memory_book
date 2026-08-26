@@ -45,7 +45,8 @@ export interface TeammateMessage {
   id: string;
   sender: string;
   role: string;
-  message: string;
+  message?: string;
+  image?: string;
   avatar: string;
   color?: "yellow" | "blue" | "pink" | "green";
 }

@@ -18,9 +18,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 // Chapter page layouts
 import { BeginningPage } from "./chapters/BeginningPage";
 import { JourneyTimeline } from "./chapters/JourneyTimeline";
-import { MemoriesGrid } from "./chapters/MemoriesGrid";
+import { MemoriesGrid, MemoriesClosing } from "./chapters/MemoriesGrid";
 import { PeopleMessages } from "./chapters/PeopleMessages";
-import { InsideJokes } from "./chapters/InsideJokes";
 import { GoodbyeLetter } from "./chapters/GoodbyeLetter";
 
 interface BookShellProps {
@@ -28,8 +27,8 @@ interface BookShellProps {
 }
 
 export const BookShell = ({ data }: BookShellProps) => {
-  const [activeSpreadIndex, setActiveSpreadIndex] = useState(0); // 0 = Closed (Cover), 1 = Dedication/Beginning, 2 = Journey/Memories, 3 = People/Jokes, 4 = Goodbye/Signatures, 5 = Closed (Back)
-  const [activeMobilePageIndex, setActiveMobilePageIndex] = useState(0); // 0 to 9 for single page mobile scrolling
+  const [activeSpreadIndex, setActiveSpreadIndex] = useState(0);
+  const [activeMobilePageIndex, setActiveMobilePageIndex] = useState(0);
   const [mobilePageDirection, setMobilePageDirection] = useState(1);
   const [activeChapterId, setActiveChapterId] = useState("");
   const [isMobile, setIsMobile] = useState(false);
@@ -110,175 +109,45 @@ export const BookShell = ({ data }: BookShellProps) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMobile, activeSpreadIndex, activeMobilePageIndex]);
 
-  // Synchronize tabs when user clicks a chapter link
-  const handleChapterSelect = (id: string) => {
-    setActiveChapterId(id);
-    if (isMobile) {
-      const pageMap: Record<string, number> = {
-        beginning: 2,
-        journey: 3,
-        memories: 5,
-        people: 6,
-        "inside-jokes": 7,
-        goodbye: 8,
-      };
-      if (pageMap[id] !== undefined) {
-        setMobilePageDirection(pageMap[id] > activeMobilePageIndex ? 1 : -1);
-        setActiveMobilePageIndex(pageMap[id]);
-      }
-    } else {
-      const spreadMap: Record<string, number> = {
-        beginning: 1,
-        journey: 2,
-        memories: 3,
-        people: 3,
-        "inside-jokes": 4,
-        goodbye: 4,
-      };
-      if (spreadMap[id] !== undefined) {
-        handleSpreadChange(spreadMap[id]);
-      }
-    }
-  };
+  // Epilogue / Reflection component used when an extra balance page is needed
+  const FinalReflectionPage = () => (
+    <div className="flex flex-col h-full justify-between items-center text-center relative py-6 select-none">
+      <div className="space-y-2">
+        <div className="font-serif text-xs tracking-[0.25em] text-accent uppercase font-black">
+          ✦ Final Reflection ✦
+        </div>
+        <h3 className="font-serif text-xl md:text-2xl font-black text-primary uppercase tracking-wide">
+          To New Beginnings
+        </h3>
+        <p className="font-serif text-xs text-muted/60 uppercase tracking-widest">
+          The Next Great Adventure
+        </p>
+      </div>
 
-  // Sync state for desktop spread flipping
-  const handleSpreadChange = (newSpread: number) => {
-    setActiveSpreadIndex(newSpread);
-    playPageTurnSound();
-    if (newSpread === 0) {
-      setActiveChapterId("cover");
-    } else if (newSpread === 1) {
-      setActiveChapterId("beginning");
-    } else if (newSpread === 2) {
-      setActiveChapterId("journey");
-    } else if (newSpread === 3) {
-      setActiveChapterId((prev) => (prev === "people" ? "people" : "memories"));
-    } else if (newSpread === 4) {
-      setActiveChapterId((prev) => (prev === "goodbye" ? "goodbye" : "inside-jokes"));
-    } else if (newSpread === 5) {
-      setActiveChapterId("signatures");
-    } else if (newSpread === 6) {
-      setActiveChapterId("back-cover");
-    }
-  };
+      <div className="my-4 max-w-sm p-6 bg-secondary/10 border border-secondary/30 rounded-2xl relative shadow-sm">
+        <p className="font-handwritten text-lg md:text-xl text-primary font-bold leading-relaxed">
+          &ldquo;Thank you for being such an unforgettable part of our team story. Wishing you joy, immense success, and boundless inspiration wherever your path leads next!&rdquo;
+        </p>
+        <div className="mt-3 font-serif text-[10px] uppercase tracking-widest text-accent font-black">
+          ✦ Forever Part of the CCTech Family ✦
+        </div>
+      </div>
 
-  // Next and Prev handlers
-  const handleNext = () => {
-    if (activeSpreadIndex < 6) {
-      handleSpreadChange(activeSpreadIndex + 1);
-    }
-  };
+      <div className="text-[10px] text-muted/40 font-mono">
+        ✦ CCTECH AEC &bull; 2024 – 2026 ✦
+      </div>
+    </div>
+  );
 
-  const handlePrev = () => {
-    if (activeSpreadIndex > 0) {
-      handleSpreadChange(activeSpreadIndex - 1);
-    }
-  };
-
-  // Mobile page flipping
-  const handleMobileNext = () => {
-    if (activeMobilePageIndex < 10) {
-      setMobilePageDirection(1);
-      playPageTurnSound();
-      setActiveMobilePageIndex((prev) => {
-        const next = prev + 1;
-        syncMobileTab(next);
-        return next;
-      });
-    }
-  };
-
-  const handleMobilePrev = () => {
-    if (activeMobilePageIndex > 0) {
-      setMobilePageDirection(-1);
-      playPageTurnSound();
-      setActiveMobilePageIndex((prev) => {
-        const next = prev - 1;
-        syncMobileTab(next);
-        return next;
-      });
-    }
-  };
-
-  const syncMobileTab = (page: number) => {
-    if (page === 0) setActiveChapterId("cover");
-    else if (page === 1) setActiveChapterId("dedication");
-    else if (page === 2) setActiveChapterId("beginning");
-    else if (page === 3 || page === 4) setActiveChapterId("journey");
-    else if (page === 5) setActiveChapterId("memories");
-    else if (page === 6) setActiveChapterId("people");
-    else if (page === 7) setActiveChapterId("inside-jokes");
-    else if (page === 8) setActiveChapterId("goodbye");
-    else if (page === 9) setActiveChapterId("signatures");
-    else if (page === 10) setActiveChapterId("back-cover");
-  };
-
-  // Z-indexing and rotation calculations for sheets (Desktop)
-  const getSheetStyle = (index: number) => {
-    const isFlipped = index < activeSpreadIndex;
-    let rotation = isFlipped ? -180 : 0;
-
-    // Subtle 3D page corner lift on margin hover
-    if (!shouldReduceMotion) {
-      if (index === activeSpreadIndex - 1 && isLeftHovered) {
-        rotation = -172;
-      } else if (index === activeSpreadIndex && isRightHovered) {
-        rotation = -8;
-      }
-    }
-
-    const zIndex = isFlipped ? index : 6 - index;
-    return {
-      transform: `rotateY(${rotation}deg)`,
-      zIndex: zIndex,
-    };
-  };
-
-  // Determine active chapter progress number
-  let currentChapterNumber = 1;
-  if (isMobile) {
-    if (activeMobilePageIndex === 2) currentChapterNumber = 1;
-    else if (activeMobilePageIndex === 3 || activeMobilePageIndex === 4) currentChapterNumber = 2;
-    else if (activeMobilePageIndex === 5) currentChapterNumber = 3;
-    else if (activeMobilePageIndex === 6) currentChapterNumber = 4;
-    else if (activeMobilePageIndex === 7) currentChapterNumber = 5;
-    else if (activeMobilePageIndex >= 8) currentChapterNumber = 6;
-  } else {
-    if (activeSpreadIndex === 1) currentChapterNumber = 1;
-    else if (activeSpreadIndex === 2) currentChapterNumber = 2;
-    else if (activeSpreadIndex === 3) currentChapterNumber = activeChapterId === "people" ? 4 : 3;
-    else if (activeSpreadIndex === 4) currentChapterNumber = activeChapterId === "goodbye" ? 6 : 5;
-    else if (activeSpreadIndex >= 5) currentChapterNumber = 6;
-  }
-
-  // Mobile Page Transition Variants (Folding page-curl look)
-  const mobilePageVariants = {
-    initial: (dir: number) => ({
-      rotateY: dir > 0 ? 70 : -70,
-      opacity: 0,
-      transformOrigin: "left center"
-    }),
-    animate: {
-      rotateY: 0,
-      opacity: 1,
-      transformOrigin: "left center",
-      transition: { duration: 0.5, ease: "easeOut" }
-    },
-    exit: (dir: number) => ({
-      rotateY: dir > 0 ? -70 : 70,
-      opacity: 0,
-      transformOrigin: "left center",
-      transition: { duration: 0.45, ease: "easeIn" }
-    })
-  };
-
-  // Sheets data mapping (Desktop)
-  const sheets = [
-    // Sheet 0: Front Cover & Dedication
+  // 1. Build all inside pages dynamically (from Dedication to Signatures)
+  const baseInsidePages: { id: string; chapter: string; chapterNum: number; content: React.ReactNode }[] = [
+    // Page: Dedication
     {
-      front: <BookCover data={data} onOpen={() => handleSpreadChange(1)} isOpen={activeSpreadIndex > 0} />,
-      back: (
-        <div className="flex flex-col items-center justify-center h-full text-center p-8 md:p-10 space-y-6 relative border-r border-secondary/15 select-none bg-card">
+      id: "dedication",
+      chapter: "dedication",
+      chapterNum: 1,
+      content: (
+        <div className="flex flex-col items-center justify-center h-full text-center p-8 md:p-10 space-y-6 relative select-none bg-card">
           <div className="font-serif text-xs tracking-[0.25em] text-accent uppercase font-black">
             Dedication Page
           </div>
@@ -303,252 +172,377 @@ export const BookShell = ({ data }: BookShellProps) => {
             &ldquo;{data.teammate.shortIntro}&rdquo;
           </p>
           <HeartDoodle className="absolute bottom-8 right-8 text-accent/35" size={28} />
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
         </div>
       )
     },
-    // Sheet 1: Chapter 1 (Beginning) & Chapter 2 (Journey Part 1 - Left Page)
-    {
-      front: data.beginning ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
-          <BeginningPage data={data.beginning} name={data.teammate.name} />
-        </div>
-      ) : null,
-      back: data.timeline ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-r border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
-          <JourneyTimeline milestones={data.timeline} part="left" />
-        </div>
-      ) : null
-    },
-    // Sheet 2: Chapter 2 (Journey Part 2 - Right Page) & Chapter 3 (Memories)
-    {
-      front: data.timeline ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
-          <JourneyTimeline milestones={data.timeline} part="right" />
-        </div>
-      ) : null,
-      back: data.memories ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-r border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
-          <MemoriesGrid memories={data.memories} />
-        </div>
-      ) : null
-    },
-    // Sheet 3: Chapter 4 (People Messages) & Chapter 5 (Inside Jokes)
-    {
-      front: data.messages ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
-          <PeopleMessages messages={data.messages} />
-        </div>
-      ) : null,
-      back: data.jokes ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-r border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
-          <InsideJokes jokes={data.jokes} />
-        </div>
-      ) : null
-    },
-    // Sheet 4: Chapter 6 (Goodbye Letter) & Guestbook Signatures
-    {
-      front: data.letter ? (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
-          <GoodbyeLetter data={data.letter} hideSignatures={true} />
-        </div>
-      ) : null,
-      back: (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-r border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
-          <div className="flex flex-col h-full justify-between relative">
-            <div className="text-center pt-2">
-              <h3 className="font-handwritten text-2xl md:text-3xl text-accent rotate-[-1deg] font-bold">
-                With Love & Gratitude
-              </h3>
-              <p className="font-serif text-[10px] md:text-xs text-muted/50 uppercase tracking-widest mt-1">
-                Your Teammates&apos; Signatures
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-y-4 gap-x-4 py-4 px-2 flex-grow items-center justify-center select-none">
-              {data.letter?.signatures.map((sig, idx) => {
-                const tilts = ["rotate-[-3deg]", "rotate-[2deg]", "rotate-[-1deg]", "rotate-[4deg]", "rotate-[-2deg]", "rotate-[1deg]"];
-                const colors = ["text-accent", "text-primary", "text-[#4A6B53]", "text-[#C98A5B]"];
-                return (
-                  <span
-                    key={idx}
-                    className={`font-handwritten text-base md:text-lg font-black text-center ${tilts[idx % tilts.length]} ${colors[idx % colors.length]} hover:scale-110 transition-transform duration-200 cursor-default`}
-                  >
-                    {sig}
-                  </span>
-                );
-              })}
-            </div>
-
-            <div className="text-center pb-1 text-[9px] text-muted/40 font-mono">
-              ✦ MAY YOUR NEXT CHAPTER BE EXTRAORDINARY ✦
-            </div>
-          </div>
-        </div>
+    // Page: Beginning
+    ...(data.beginning ? [{
+      id: "beginning",
+      chapter: "beginning",
+      chapterNum: 1,
+      content: <BeginningPage data={data.beginning} name={data.teammate.name} />
+    }] : []),
+    // Pages: Journey Part 1 & 2
+    ...(data.timeline ? [
+      {
+        id: "journey-1",
+        chapter: "journey",
+        chapterNum: 2,
+        content: <JourneyTimeline milestones={data.timeline} part="left" />
+      },
+      {
+        id: "journey-2",
+        chapter: "journey",
+        chapterNum: 2,
+        content: <JourneyTimeline milestones={data.timeline} part="right" />
+      }
+    ] : []),
+    // Pages: Chapter 3 Scrapbook Memories
+    ...(data.memories ? [
+      {
+        id: "memories-1",
+        chapter: "memories",
+        chapterNum: 3,
+        content: <MemoriesGrid page={1} memories={data.memories} />
+      },
+      {
+        id: "memories-2",
+        chapter: "memories",
+        chapterNum: 3,
+        content: <MemoriesGrid page={2} memories={data.memories} />
+      },
+      {
+        id: "memories-3",
+        chapter: "memories",
+        chapterNum: 3,
+        content: <MemoriesGrid page={3} memories={data.memories} />
+      },
+      {
+        id: "memories-4",
+        chapter: "memories",
+        chapterNum: 3,
+        content: <MemoriesGrid page={4} memories={data.memories} />
+      },
+      {
+        id: "memories-5",
+        chapter: "memories",
+        chapterNum: 3,
+        content: <MemoriesGrid page={5} memories={data.memories} />
+      },
+      {
+        id: "memories-closing",
+        chapter: "memories",
+        chapterNum: 3,
+        content: <MemoriesClosing />
+      }
+    ] : []),
+    // Pages: Chapter 4 People Messages (Every single message gets 1 full page!)
+    ...(data.messages || []).map((msg, idx) => ({
+      id: `people-${idx + 1}`,
+      chapter: "people",
+      chapterNum: 4,
+      content: (
+        <PeopleMessages
+          message={msg}
+          index={idx}
+          total={data.messages?.length || 1}
+        />
       )
-    },
-    // Sheet 5: Album Epilogue & Back Cover
+    })),
+    // Page: Chapter 5 Goodbye Letter
+    ...(data.letter ? [{
+      id: "goodbye",
+      chapter: "goodbye",
+      chapterNum: 5,
+      content: <GoodbyeLetter data={data.letter} hideSignatures={true} />
+    }] : []),
+    // Page: Signatures & Reflections
     {
-      front: (
-        <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
-          <div className="flex flex-col h-full justify-between items-center text-center relative py-6">
-            <div className="space-y-2">
-              <div className="font-serif text-xs tracking-[0.25em] text-accent uppercase font-black">
-                ✦ Final Reflection ✦
-              </div>
-              <h3 className="font-serif text-xl md:text-2xl font-black text-primary uppercase tracking-wide">
-                To New Beginnings
-              </h3>
-              <p className="font-serif text-xs text-muted/60 uppercase tracking-widest">
-                The Next Great Adventure
-              </p>
-            </div>
-
-            <div className="my-4 max-w-sm p-6 bg-secondary/10 border border-secondary/30 rounded-2xl relative shadow-sm">
-              <p className="font-handwritten text-lg md:text-xl text-primary font-bold leading-relaxed">
-                &ldquo;Thank you for being such an unforgettable part of our team story. Wishing you joy, immense success, and boundless inspiration wherever your path leads next!&rdquo;
-              </p>
-              <div className="mt-3 font-serif text-[10px] uppercase tracking-widest text-accent font-black">
-                ✦ Forever Part of the CCTech Family ✦
-              </div>
-            </div>
-
-            <div className="text-[10px] text-muted/40 font-mono">
-              ✦ CCTECH AEC &bull; 2024 – 2026 ✦
-            </div>
+      id: "signatures",
+      chapter: "signatures",
+      chapterNum: 5,
+      content: (
+        <div className="flex flex-col h-full justify-between relative select-none">
+          <div className="text-center pt-2">
+            <h3 className="font-handwritten text-2xl md:text-3xl text-accent rotate-[-1deg] font-bold">
+              With Love & Gratitude
+            </h3>
+            <p className="font-serif text-[10px] md:text-xs text-muted/50 uppercase tracking-widest mt-1">
+              Your Teammates&apos; Signatures
+            </p>
           </div>
-        </div>
-      ),
-      back: (
-        <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-[#3E2B20] text-card select-none rounded-l-md border-r border-secondary/15 relative">
-          {/* Spine shadow overlay */}
-          <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
-          <div className="w-20 h-20 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center mb-4 text-3xl">
-            📖
+          
+          <div className="grid grid-cols-3 gap-y-4 gap-x-4 py-4 px-2 flex-grow items-center justify-center">
+            {data.letter?.signatures.map((sig, idx) => {
+              const tilts = ["rotate-[-3deg]", "rotate-[2deg]", "rotate-[-1deg]", "rotate-[4deg]", "rotate-[-2deg]", "rotate-[1deg]"];
+              const colors = ["text-accent", "text-primary", "text-[#4A6B53]", "text-[#C98A5B]"];
+              return (
+                <span
+                  key={idx}
+                  className={`font-handwritten text-base md:text-lg font-black text-center ${tilts[idx % tilts.length]} ${colors[idx % colors.length]} hover:scale-110 transition-transform duration-200 cursor-default`}
+                >
+                  {sig}
+                </span>
+              );
+            })}
           </div>
-          <h2 className="font-serif text-xl font-black uppercase tracking-widest text-[#FAF0D7]">
-            Memory Book
-          </h2>
-          <p className="font-serif text-xs text-muted/40 uppercase tracking-[0.2em] mt-1.5">
-            End of Album
-          </p>
+
+          <div className="text-center pb-1 text-[9px] text-muted/40 font-mono">
+            ✦ MAY YOUR NEXT CHAPTER BE EXTRAORDINARY ✦
+          </div>
         </div>
       )
     }
   ];
 
-  // Mobile Single-Pages Array (11 pages)
+  // If insidePages count is even, append Final Reflection page so count is odd for perfect sheet balance
+  const insidePages = baseInsidePages.length % 2 === 0
+    ? [
+        ...baseInsidePages.slice(0, baseInsidePages.length - 1),
+        {
+          id: "final-reflection",
+          chapter: "signatures",
+          chapterNum: 5,
+          content: <FinalReflectionPage />
+        },
+        baseInsidePages[baseInsidePages.length - 1]
+      ]
+    : baseInsidePages;
+
+  // Compute total physical sheets (Sheet 0 to Sheet N-1)
+  // Sheet 0: Front = Cover, Back = insidePages[0]
+  // Sheet k: Front = insidePages[2k-1], Back = insidePages[2k]
+  // Sheet Last: Front = insidePages[last], Back = Back Leather Cover
+  const totalSheetsCount = Math.floor((insidePages.length + 1) / 2);
+  const totalSpreadsCount = totalSheetsCount + 1;
+  const maxSpreadIndex = totalSpreadsCount - 1;
+  const maxMobilePageIndex = insidePages.length + 1;
+
+  // Chapter Navigation Page Map (Dynamic)
+  const getChapterTarget = (chapterKey: string) => {
+    const pageIndex = insidePages.findIndex((p) => p.chapter === chapterKey);
+    if (pageIndex === -1) return { mobile: 1, spread: 1 };
+    const mobile = pageIndex + 1; // mobile 0 is cover
+    const spread = Math.floor((mobile + 1) / 2);
+    return { mobile, spread };
+  };
+
+  // Synchronize tabs when user clicks a chapter link
+  const handleChapterSelect = (id: string) => {
+    setActiveChapterId(id);
+    const target = getChapterTarget(id);
+    if (isMobile) {
+      setMobilePageDirection(target.mobile > activeMobilePageIndex ? 1 : -1);
+      setActiveMobilePageIndex(target.mobile);
+    } else {
+      handleSpreadChange(target.spread);
+    }
+  };
+
+  // Sync state for desktop spread flipping
+  const handleSpreadChange = (newSpread: number) => {
+    setActiveSpreadIndex(newSpread);
+    playPageTurnSound();
+    if (newSpread === 0) {
+      setActiveChapterId("cover");
+    } else if (newSpread === maxSpreadIndex) {
+      setActiveChapterId("back-cover");
+    } else {
+      // Find chapter for this spread
+      const rightPageIndex = newSpread * 2 - 1;
+      const pageData = insidePages[rightPageIndex - 1] || insidePages[rightPageIndex - 2];
+      if (pageData) {
+        setActiveChapterId(pageData.chapter);
+      }
+    }
+  };
+
+  // Next and Prev handlers
+  const handleNext = () => {
+    if (activeSpreadIndex < maxSpreadIndex) {
+      handleSpreadChange(activeSpreadIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (activeSpreadIndex > 0) {
+      handleSpreadChange(activeSpreadIndex - 1);
+    }
+  };
+
+  // Mobile page flipping
+  const handleMobileNext = () => {
+    if (activeMobilePageIndex < maxMobilePageIndex) {
+      setMobilePageDirection(1);
+      playPageTurnSound();
+      setActiveMobilePageIndex((prev) => {
+        const next = prev + 1;
+        syncMobileTab(next);
+        return next;
+      });
+    }
+  };
+
+  const handleMobilePrev = () => {
+    if (activeMobilePageIndex > 0) {
+      setMobilePageDirection(-1);
+      playPageTurnSound();
+      setActiveMobilePageIndex((prev) => {
+        const next = prev - 1;
+        syncMobileTab(next);
+        return next;
+      });
+    }
+  };
+
+  const syncMobileTab = (page: number) => {
+    if (page === 0) setActiveChapterId("cover");
+    else if (page === maxMobilePageIndex) setActiveChapterId("back-cover");
+    else {
+      const pageData = insidePages[page - 1];
+      if (pageData) setActiveChapterId(pageData.chapter);
+    }
+  };
+
+  // Z-indexing and rotation calculations for sheets (Desktop)
+  const getSheetStyle = (index: number) => {
+    const isFlipped = index < activeSpreadIndex;
+    let rotation = isFlipped ? -180 : 0;
+
+    // Subtle 3D page corner lift on margin hover
+    if (!shouldReduceMotion) {
+      if (index === activeSpreadIndex - 1 && isLeftHovered) {
+        rotation = -172;
+      } else if (index === activeSpreadIndex && isRightHovered) {
+        rotation = -8;
+      }
+    }
+
+    const zIndex = isFlipped ? index : 30 - index;
+    return {
+      transform: `rotateY(${rotation}deg)`,
+      zIndex: zIndex,
+    };
+  };
+
+  // Determine active chapter progress number
+  let currentChapterNumber = 1;
+  if (isMobile) {
+    if (activeMobilePageIndex > 0 && activeMobilePageIndex <= insidePages.length) {
+      currentChapterNumber = insidePages[activeMobilePageIndex - 1]?.chapterNum || 1;
+    } else if (activeMobilePageIndex > insidePages.length) {
+      currentChapterNumber = 5;
+    }
+  } else {
+    if (activeSpreadIndex > 0 && activeSpreadIndex < maxSpreadIndex) {
+      const rightPageIndex = activeSpreadIndex * 2 - 1;
+      currentChapterNumber =
+        insidePages[rightPageIndex - 1]?.chapterNum ||
+        insidePages[rightPageIndex - 2]?.chapterNum ||
+        1;
+    } else if (activeSpreadIndex >= maxSpreadIndex) {
+      currentChapterNumber = 5;
+    }
+  }
+
+  // Mobile Page Transition Variants (Folding page-curl look)
+  const mobilePageVariants = {
+    initial: (dir: number) => ({
+      rotateY: dir > 0 ? 70 : -70,
+      opacity: 0,
+      transformOrigin: "left center"
+    }),
+    animate: {
+      rotateY: 0,
+      opacity: 1,
+      transformOrigin: "left center",
+      transition: { duration: 0.5, ease: "easeOut" }
+    },
+    exit: (dir: number) => ({
+      rotateY: dir > 0 ? -70 : 70,
+      opacity: 0,
+      transformOrigin: "left center",
+      transition: { duration: 0.45, ease: "easeIn" }
+    })
+  };
+
+  // Sheets data mapping (Desktop - Generated dynamically from insidePages)
+  const sheets = Array.from({ length: totalSheetsCount }).map((_, sheetIdx) => {
+    if (sheetIdx === 0) {
+      // Sheet 0: Front Cover & Dedication
+      return {
+        front: <BookCover data={data} onOpen={() => handleSpreadChange(1)} isOpen={activeSpreadIndex > 0} />,
+        back: (
+          <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-r border-secondary/15">
+            {/* Spine shadow overlay */}
+            <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
+            {insidePages[0].content}
+          </div>
+        )
+      };
+    } else if (sheetIdx === totalSheetsCount - 1) {
+      // Sheet Last: Signatures (Front) & Back Leather Cover (Back)
+      return {
+        front: (
+          <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
+            {/* Spine shadow overlay */}
+            <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
+            {insidePages[insidePages.length - 1].content}
+          </div>
+        ),
+        back: (
+          <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-[#3E2B20] text-card select-none rounded-l-md border-r border-secondary/15 relative">
+            {/* Spine shadow overlay */}
+            <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
+            <div className="w-20 h-20 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center mb-4 text-3xl">
+              📖
+            </div>
+            <h2 className="font-serif text-xl font-black uppercase tracking-widest text-[#FAF0D7]">
+              Memory Book
+            </h2>
+            <p className="font-serif text-xs text-muted/40 uppercase tracking-[0.2em] mt-1.5">
+              End of Album
+            </p>
+          </div>
+        )
+      };
+    } else {
+      // Middle sheets: Front = insidePages[2 * sheetIdx - 1], Back = insidePages[2 * sheetIdx]
+      const frontPage = insidePages[2 * sheetIdx - 1];
+      const backPage = insidePages[2 * sheetIdx];
+      return {
+        front: (
+          <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-l border-secondary/15">
+            {/* Spine shadow overlay */}
+            <div className="absolute top-0 left-0 bottom-0 w-8 page-shadow-right pointer-events-none z-10" />
+            {frontPage?.content}
+          </div>
+        ),
+        back: (
+          <div className="w-full h-full relative select-none bg-card p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar border-r border-secondary/15">
+            {/* Spine shadow overlay */}
+            <div className="absolute top-0 right-0 bottom-0 w-8 page-shadow-left pointer-events-none z-10" />
+            {backPage?.content}
+          </div>
+        )
+      };
+    }
+  });
+
+  // Mobile Single-Pages Array (Generated dynamically)
   const mobilePages = [
     // Page 0: Cover
     <BookCover key="cover" data={data} onOpen={() => { setMobilePageDirection(1); setActiveMobilePageIndex(1); syncMobileTab(1); }} isOpen={activeMobilePageIndex > 0} />,
-    // Page 1: Dedication
-    <Card variant="scrapbook" key="dedication" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8">
-      <div className="flex flex-col items-center justify-center text-center space-y-6 py-4">
-        <div className="font-serif text-[11px] tracking-[0.25em] text-accent uppercase font-black">
-          Dedication
+    // All inside pages
+    ...insidePages.map((page, idx) => (
+      <Card variant="scrapbook" key={page.id} className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
+        {page.content}
+        <div className="text-center text-[9px] font-mono text-muted/30 mt-4">
+          PAGE {String(idx + 1).padStart(2, "0")}
         </div>
-        <AvatarFrame variant="antique" className="w-28 h-28">
-          <Avatar src={data.teammate.avatar} name={data.teammate.name} size="lg" />
-        </AvatarFrame>
-        <div className="space-y-1">
-          <h2 className="font-serif text-xl font-black text-primary uppercase tracking-wide">
-            {data.teammate.name}
-          </h2>
-          <p className="font-serif text-xs text-accent font-bold tracking-wider uppercase">
-            {data.teammate.role}
-          </p>
-        </div>
-        <div className="w-14 h-[1px] bg-secondary/50" />
-        <p className="font-serif text-xs md:text-sm text-primary/80 max-w-xs leading-relaxed italic px-4">
-          &ldquo;{data.teammate.shortIntro}&rdquo;
-        </p>
-      </div>
-      <div className="text-center text-[9px] font-mono text-muted/30">PAGE 01</div>
-    </Card>,
-    // Page 2: Beginning
-    <Card variant="scrapbook" key="beginning" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.beginning && <BeginningPage data={data.beginning} name={data.teammate.name} />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 02</div>
-    </Card>,
-    // Page 3: Journey Part 1
-    <Card variant="scrapbook" key="journey-1" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.timeline && <JourneyTimeline milestones={data.timeline} part="left" />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 03</div>
-    </Card>,
-    // Page 4: Journey Part 2
-    <Card variant="scrapbook" key="journey-2" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.timeline && <JourneyTimeline milestones={data.timeline} part="right" />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 04</div>
-    </Card>,
-    // Page 5: Memories
-    <Card variant="scrapbook" key="memories" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.memories && <MemoriesGrid memories={data.memories} />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 05</div>
-    </Card>,
-    // Page 6: People
-    <Card variant="scrapbook" key="people" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.messages && <PeopleMessages messages={data.messages} />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 06</div>
-    </Card>,
-    // Page 7: Inside Jokes
-    <Card variant="scrapbook" key="jokes" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.jokes && <InsideJokes jokes={data.jokes} />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 07</div>
-    </Card>,
-    // Page 8: Goodbye
-    <Card variant="scrapbook" key="goodbye" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8 overflow-y-auto no-scrollbar">
-      {data.letter && <GoodbyeLetter data={data.letter} hideSignatures={true} />}
-      <div className="text-center text-[9px] font-mono text-muted/30 mt-4">PAGE 08</div>
-    </Card>,
-    // Page 9: Signatures
-    <Card variant="scrapbook" key="signatures" className="w-full min-h-[580px] flex flex-col justify-between p-6 md:p-8">
-      <div className="flex flex-col h-full justify-between relative">
-        <div className="text-center pt-2">
-          <h3 className="font-handwritten text-2xl text-accent rotate-[-1deg] font-bold">
-            With Love & Gratitude
-          </h3>
-          <p className="font-serif text-[10px] text-muted/50 uppercase tracking-widest mt-1">
-            Signatures
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-y-3 gap-x-4 py-4 flex-grow items-center justify-center select-none">
-          {data.letter?.signatures.map((sig, idx) => {
-            const tilts = ["rotate-[-3deg]", "rotate-[2deg]", "rotate-[-1deg]", "rotate-[4deg]"];
-            const colors = ["text-accent", "text-primary", "text-[#4A6B53]", "text-[#C98A5B]"];
-            return (
-              <span
-                key={idx}
-                className={`font-handwritten text-base font-black text-center ${tilts[idx % tilts.length]} ${colors[idx % colors.length]}`}
-              >
-                {sig}
-              </span>
-            );
-          })}
-        </div>
-        <div className="text-center text-[9px] font-mono text-muted/30">PAGE 09</div>
-      </div>
-    </Card>,
-    // Page 10: Back Cover Closed
+      </Card>
+    )),
+    // Back Cover Closed
     <div key="back-cover" className="w-full min-h-[580px] flex flex-col items-center justify-center text-center p-8 bg-[#3E2B20] text-card select-none rounded-lg shadow-xl border-4 border-double border-primary/40">
       <div className="w-16 h-16 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center mb-4 text-3xl">
         📖
@@ -577,7 +571,7 @@ export const BookShell = ({ data }: BookShellProps) => {
           {/* Mobile Top Header Navigation */}
           <div className={cn(
             "w-full flex flex-col items-center space-y-3 mb-4 transition-all duration-500",
-            activeMobilePageIndex > 0 && activeMobilePageIndex < 10 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0"
+            activeMobilePageIndex > 0 && activeMobilePageIndex < maxMobilePageIndex ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0"
           )}>
             <ChapterNavigation
               chapters={data.chapters}
@@ -629,7 +623,7 @@ export const BookShell = ({ data }: BookShellProps) => {
               <button
                 onClick={handleMobileNext}
                 className="font-serif text-xs uppercase tracking-wider text-primary/60 hover:text-accent font-black transition-colors cursor-pointer"
-                disabled={activeMobilePageIndex === 10}
+                disabled={activeMobilePageIndex === maxMobilePageIndex}
               >
                 Next &rarr;
               </button>
@@ -652,7 +646,7 @@ export const BookShell = ({ data }: BookShellProps) => {
           {/* Top Header Navigation Section (Only shown when book is open) */}
           <div className={cn(
             "w-full flex flex-col items-center space-y-3 mb-2 transition-all duration-500",
-            activeSpreadIndex > 0 && activeSpreadIndex < 6 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0"
+            activeSpreadIndex > 0 && activeSpreadIndex < maxSpreadIndex ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden mb-0"
           )}>
             <ChapterNavigation
               chapters={data.chapters}
@@ -672,7 +666,7 @@ export const BookShell = ({ data }: BookShellProps) => {
                 "relative w-[1160px] h-[740px] transition-transform duration-[850ms] ease-in-out preserve-3d",
                 activeSpreadIndex === 0 
                   ? "translate-x-[-25%]" 
-                  : activeSpreadIndex === 6 
+                  : activeSpreadIndex === maxSpreadIndex 
                   ? "translate-x-[25%]" 
                   : "translate-x-0"
               )}
@@ -691,7 +685,7 @@ export const BookShell = ({ data }: BookShellProps) => {
               <div 
                 className={cn(
                   "absolute top-[-7px] right-[-7px] w-[50.6%] h-[754px] bg-[#422F24] border-2 border-[#2E2018] rounded-r-xl shadow-2xl transition-all duration-[850ms] ease-in-out -z-30 origin-left overflow-hidden",
-                  activeSpreadIndex === 6 ? "opacity-0 scale-95" : "opacity-100 scale-100"
+                  activeSpreadIndex === maxSpreadIndex ? "opacity-0 scale-95" : "opacity-100 scale-100"
                 )}
               >
                 {/* Vintage Gold Corners */}
@@ -714,7 +708,7 @@ export const BookShell = ({ data }: BookShellProps) => {
               <div 
                 className={cn(
                   "absolute top-0 right-0 w-1/2 h-full bg-card border-r-4 border-y border-secondary/40 rounded-r transition-all duration-[850ms] -z-10",
-                  activeSpreadIndex >= 5 ? "opacity-0 -translate-x-4" : "opacity-100 translate-x-0"
+                  activeSpreadIndex >= maxSpreadIndex - 1 ? "opacity-0 -translate-x-4" : "opacity-100 translate-x-0"
                 )}
                 style={{
                   boxShadow: "inset 1px 0 3px rgba(0,0,0,0.05), 2px 2px 4px rgba(91,70,54,0.1), 3px 3px 0px #FAF8F5, 6px 6px 0px #E7DEC6"
@@ -731,7 +725,7 @@ export const BookShell = ({ data }: BookShellProps) => {
                   {/* Front Face (Facing right initially) */}
                   <div className="absolute inset-0 w-full h-full backface-hidden bg-card border-l border-secondary/20 shadow-inner p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-r-sm">
                     {sheet.front}
-                    {index > 0 && index < 5 && (
+                    {index > 0 && index < totalSheetsCount - 1 && (
                       <div className="absolute bottom-4 right-6 text-[10px] text-muted/30 font-mono select-none">
                         PAGE {String(index * 2).padStart(2, "0")}
                       </div>
@@ -744,7 +738,7 @@ export const BookShell = ({ data }: BookShellProps) => {
                     style={{ transform: "rotateY(180deg)" }}
                   >
                     {sheet.back}
-                    {index >= 0 && index < 5 && (
+                    {index >= 0 && index < totalSheetsCount - 1 && (
                       <div className="absolute bottom-4 left-6 text-[10px] text-muted/30 font-mono select-none">
                         PAGE {String(index * 2 + 1).padStart(2, "0")}
                       </div>
@@ -776,7 +770,7 @@ export const BookShell = ({ data }: BookShellProps) => {
                 </div>
               )}
               {/* Right page margin click */}
-              {activeSpreadIndex < 6 && (
+              {activeSpreadIndex < maxSpreadIndex && (
                 <div 
                   className="absolute top-0 right-0 w-[14%] h-full z-30 cursor-e-resize group preserve-3d"
                   style={{ transform: "translateZ(50px)" }}
@@ -816,7 +810,7 @@ export const BookShell = ({ data }: BookShellProps) => {
               <button
                 onClick={handleNext}
                 className="font-serif text-xs uppercase tracking-wider text-primary/60 hover:text-accent font-black transition-all duration-300 cursor-pointer flex items-center space-x-1"
-                disabled={activeSpreadIndex === 6}
+                disabled={activeSpreadIndex === maxSpreadIndex}
               >
                 Next Spread &rarr;
               </button>

@@ -140,7 +140,7 @@ export default function Home() {
             {/* 2. Artistic Dedication Tags */}
             <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.55)} className="space-y-1 select-none">
               <h2 className="font-handwritten text-3xl text-primary rotate-[-1.5deg]">
-                Four years.
+                A little over 2 years.
               </h2>
               <p className="font-handwritten text-2xl text-accent rotate-[1.5deg] mt-0.5">
                 Countless memories.
@@ -192,7 +192,7 @@ export default function Home() {
                 className="inline-flex items-center justify-center font-serif font-semibold transition-all duration-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 cursor-pointer active:scale-95 bg-primary text-card border-2 border-primary hover:bg-transparent hover:text-primary shadow-[2px_2px_0px_rgba(91,70,54,1)] hover:shadow-none translate-y-0 active:translate-y-[2px] active:shadow-none font-serif text-xs uppercase tracking-widest px-8 py-4 group"
                 aria-label="Open the memory book"
               >
-                Open the Book 
+                Go to the Book 
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 ml-2 font-sans" aria-hidden="true">&rarr;</span>
               </Link>
             </motion.div>

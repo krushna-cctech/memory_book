@@ -273,6 +273,7 @@ export const farewell: Farewell = {
 
   letter: {
     salutation: "Dearest Riyaelza,",
+    image: "/msgimg/team_message.png",
     paragraphs: [
       "It is hard to put into words how much you mean to this team. Over the last four years, you have been our go-to engineer, our problem solver, our mentor, and most importantly, our friend. You brought light, humor, and unparalleled focus to every project we tackled.",
       "Whether it was resolving midnight server crises, refactoring legacy pages, or simply sharing a laugh over coffee, you made work feel like a journey we were all lucky to share. You leave behind a codebase that is clean, an engineering culture that is strong, and a team that is deeply grateful.",

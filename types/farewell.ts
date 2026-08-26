@@ -62,6 +62,7 @@ export interface GoodbyeLetterData {
   paragraphs: string[];
   valediction: string;
   signatures: string[];
+  image?: string;
 }
 
 export interface Farewell {

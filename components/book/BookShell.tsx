@@ -716,36 +716,47 @@ export const BookShell = ({ data }: BookShellProps) => {
               />
 
               {/* 3. Render 3D physical sheets */}
-              {sheets.map((sheet, index) => (
-                <div
-                  key={index}
-                  className="absolute top-0 left-1/2 w-1/2 h-full origin-left preserve-3d transition-transform duration-[850ms] ease-in-out"
-                  style={getSheetStyle(index)}
-                >
-                  {/* Front Face (Facing right initially) */}
-                  <div className="absolute inset-0 w-full h-full backface-hidden bg-card border-l border-secondary/20 shadow-inner p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-r-sm">
-                    {sheet.front}
-                    {index > 0 && index < totalSheetsCount - 1 && (
-                      <div className="absolute bottom-4 right-6 text-[10px] text-muted/30 font-mono select-none">
-                        PAGE {String(index * 2).padStart(2, "0")}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Back Face (Facing left when sheet is flipped) */}
-                  <div 
-                    className="absolute inset-0 w-full h-full backface-hidden bg-card border-r border-secondary/20 shadow-inner p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-l-sm"
-                    style={{ transform: "rotateY(180deg)" }}
+              {sheets.map((sheet, index) => {
+                const isFlipped = index < activeSpreadIndex;
+                return (
+                  <div
+                    key={index}
+                    className="absolute top-0 left-1/2 w-1/2 h-full origin-left preserve-3d transition-transform duration-[850ms] ease-in-out"
+                    style={getSheetStyle(index)}
                   >
-                    {sheet.back}
-                    {index >= 0 && index < totalSheetsCount - 1 && (
-                      <div className="absolute bottom-4 left-6 text-[10px] text-muted/30 font-mono select-none">
-                        PAGE {String(index * 2 + 1).padStart(2, "0")}
-                      </div>
-                    )}
+                    {/* Front Face (Facing right initially) */}
+                    <div 
+                      className={cn(
+                        "absolute inset-0 w-full h-full backface-hidden bg-card border-l border-secondary/20 shadow-inner p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-r-sm",
+                        isFlipped ? "pointer-events-none" : "pointer-events-auto"
+                      )}
+                    >
+                      {sheet.front}
+                      {index > 0 && index < totalSheetsCount - 1 && (
+                        <div className="absolute bottom-4 right-6 text-[10px] text-muted/30 font-mono select-none">
+                          PAGE {String(index * 2).padStart(2, "0")}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Back Face (Facing left when sheet is flipped) */}
+                    <div 
+                      className={cn(
+                        "absolute inset-0 w-full h-full backface-hidden bg-card border-r border-secondary/20 shadow-inner p-7 md:p-9 flex flex-col justify-between overflow-y-auto no-scrollbar rounded-l-sm",
+                        isFlipped ? "pointer-events-auto" : "pointer-events-none"
+                      )}
+                      style={{ transform: "rotateY(180deg)" }}
+                    >
+                      {sheet.back}
+                      {index >= 0 && index < totalSheetsCount - 1 && (
+                        <div className="absolute bottom-4 left-6 text-[10px] text-muted/30 font-mono select-none">
+                          PAGE {String(index * 2 + 1).padStart(2, "0")}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {/* 4. Book spine and central shadow */}
               <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-4 bg-[#2A1E17] shadow-inner z-20 book-spine-shadow pointer-events-none" />
@@ -754,7 +765,7 @@ export const BookShell = ({ data }: BookShellProps) => {
               {/* Left page margin click */}
               {activeSpreadIndex > 0 && (
                 <div 
-                  className="absolute top-0 left-0 w-[14%] h-full z-30 cursor-w-resize group preserve-3d"
+                  className="absolute top-0 left-0 w-[8%] h-full z-30 cursor-w-resize group preserve-3d pointer-events-auto"
                   style={{ transform: "translateZ(50px)" }}
                   onClick={() => {
                     handlePrev();
@@ -764,15 +775,15 @@ export const BookShell = ({ data }: BookShellProps) => {
                   onMouseLeave={() => setIsLeftHovered(false)}
                   title="Previous Page"
                 >
-                  <div className="absolute top-1/2 left-4 -translate-y-1/2 bg-card/90 border border-secondary p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <ChevronLeft size={16} className="text-primary" />
+                  <div className="absolute top-1/2 left-2 -translate-y-1/2 bg-card/90 border border-secondary p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <ChevronLeft size={14} className="text-primary" />
                   </div>
                 </div>
               )}
               {/* Right page margin click */}
               {activeSpreadIndex < maxSpreadIndex && (
                 <div 
-                  className="absolute top-0 right-0 w-[14%] h-full z-30 cursor-e-resize group preserve-3d"
+                  className="absolute top-0 right-0 w-[8%] h-full z-30 cursor-e-resize group preserve-3d pointer-events-auto"
                   style={{ transform: "translateZ(50px)" }}
                   onClick={() => {
                     handleNext();
@@ -782,8 +793,8 @@ export const BookShell = ({ data }: BookShellProps) => {
                   onMouseLeave={() => setIsRightHovered(false)}
                   title="Next Page"
                 >
-                  <div className="absolute top-1/2 right-4 -translate-y-1/2 bg-card/90 border border-secondary p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <ChevronRight size={16} className="text-primary" />
+                  <div className="absolute top-1/2 right-2 -translate-y-1/2 bg-card/90 border border-secondary p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    <ChevronRight size={14} className="text-primary" />
                   </div>
                 </div>
               )}

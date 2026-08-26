@@ -6,7 +6,7 @@ import { AvatarPlaceholder } from "../../avatar/AvatarPlaceholder";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { fadeUp, staggerContainer } from "@/lib/animations";
 import { TapeDoodle, HeartDoodle, SparklesDoodle } from "../../ui/Doodles";
-import { X, ZoomIn } from "lucide-react";
+import { X, ZoomIn, ZoomOut, RotateCcw, Maximize2 } from "lucide-react";
 
 interface PeopleMessagesProps {
   messages?: TeammateMessage[];
@@ -23,11 +23,23 @@ export const PeopleMessages = ({
 }: PeopleMessagesProps) => {
   const shouldReduceMotion = useReducedMotion();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [zoomScale, setZoomScale] = useState<number>(1);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Reset zoom scale whenever modal is opened/closed
+  const openModal = (img: string) => {
+    setZoomScale(1);
+    setSelectedImage(img);
+  };
+
+  const closeModal = () => {
+    setSelectedImage(null);
+    setZoomScale(1);
+  };
 
   // Lock scrolling and page flipping while dialog modal is active
   useEffect(() => {
@@ -42,7 +54,11 @@ export const PeopleMessages = ({
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
-        setSelectedImage(null);
+        closeModal();
+      } else if (e.key === "+" || e.key === "=") {
+        setZoomScale((prev) => Math.min(prev + 0.5, 3.5));
+      } else if (e.key === "-") {
+        setZoomScale((prev) => Math.max(prev - 0.5, 1));
       } else if (
         ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", " "].includes(e.key)
       ) {
@@ -108,6 +124,30 @@ export const PeopleMessages = ({
       accentBg: "bg-[#BACBB0]/25 text-[#374C2E]",
       tapeRotation: 3,
     },
+    red: {
+      cardBg: "bg-[#FDF2F0]",
+      borderColor: "border-[#E5A8A0]/60",
+      textColor: "text-[#542B28]",
+      quoteColor: "text-[#C26257]",
+      accentBg: "bg-[#E5A8A0]/25 text-[#632924]",
+      tapeRotation: -2,
+    },
+    purple: {
+      cardBg: "bg-[#F5F0F8]",
+      borderColor: "border-[#CBB4D9]/60",
+      textColor: "text-[#3D284C]",
+      quoteColor: "text-[#8857A1]",
+      accentBg: "bg-[#CBB4D9]/25 text-[#4D2866]",
+      tapeRotation: 2,
+    },
+    orange: {
+      cardBg: "bg-[#FDF4EB]",
+      borderColor: "border-[#E8C2A0]/60",
+      textColor: "text-[#543820]",
+      quoteColor: "text-[#C97B3C]",
+      accentBg: "bg-[#E8C2A0]/25 text-[#693E1A]",
+      tapeRotation: -3,
+    },
   };
 
   const style =
@@ -129,9 +169,9 @@ export const PeopleMessages = ({
               Note {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}
             </span>
           </div>
-          <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
+          {/* <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
             Personal Note &bull; {currentMessage.sender}
-          </h2>
+          </h2> */}
           <p className="font-serif text-xs md:text-sm text-primary/70 italic mt-0.5">
             “Heartfelt messages, memories, and warm wishes from your teammates.”
           </p>
@@ -175,23 +215,32 @@ export const PeopleMessages = ({
                 {/* 1. Image Note Display (if message was given as an image) */}
                 {hasImage && (
                   <div
-                    className="relative group cursor-zoom-in rounded-xl overflow-hidden border-2 border-current/20 bg-card/80 shadow-md transition-transform hover:scale-[1.01]"
-                    onClick={() => setSelectedImage(currentMessage.image!)}
+                    className="relative group cursor-zoom-in rounded-xl overflow-hidden border-2 border-current/20 bg-card/90 shadow-md transition-all duration-300 hover:shadow-lg hover:border-accent"
+                    onClick={() => openModal(currentMessage.image!)}
+                    title="Click to Zoom / View in Fullscreen"
                   >
                     <div className={`w-full ${!hasText ? "max-h-[440px]" : "max-h-[290px]"} overflow-hidden flex items-center justify-center bg-black/5 rounded-lg`}>
                       <img
                         src={currentMessage.image}
                         alt={`Message from ${currentMessage.sender}`}
-                        className={`w-full h-auto ${!hasText ? "max-h-[440px]" : "max-h-[290px]"} object-contain transition-transform duration-300 group-hover:scale-102`}
+                        className={`w-full h-auto ${!hasText ? "max-h-[440px]" : "max-h-[290px]"} object-contain transition-transform duration-300 group-hover:scale-[1.02]`}
                         loading="lazy"
                       />
                     </div>
                     
-                    {/* Hover Zoom Overlay Badge */}
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <span className="bg-card/95 text-primary text-[11px] uppercase font-mono tracking-wider px-3.5 py-1.5 rounded-full shadow-lg border border-secondary/40 font-bold flex items-center space-x-1.5">
-                        <ZoomIn size={14} className="text-accent" />
-                        <span>Zoom Message</span>
+                    {/* Always-visible top-right Quick Zoom Badge */}
+                    <div className="absolute top-2.5 right-2.5 z-20 pointer-events-none">
+                      <span className="bg-primary/90 text-card text-[10px] uppercase font-mono tracking-wider px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm border border-accent/40 font-black flex items-center space-x-1 group-hover:bg-accent group-hover:text-white transition-colors duration-200">
+                        <ZoomIn size={12} className="stroke-[2.5]" />
+                        <span>Zoom</span>
+                      </span>
+                    </div>
+
+                    {/* Hover Zoom Overlay Banner */}
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                      <span className="bg-card text-primary text-xs uppercase font-mono tracking-wider px-4 py-2 rounded-full shadow-xl border-2 border-accent font-black flex items-center space-x-2 transform scale-95 group-hover:scale-100 transition-transform duration-200">
+                        <Maximize2 size={14} className="text-accent stroke-[2.5]" />
+                        <span>Click to Enlarge &amp; Read</span>
                       </span>
                     </div>
                   </div>
@@ -222,14 +271,25 @@ export const PeopleMessages = ({
                   </div>
                 </div>
 
-                {/* Subtle Decorative Icon */}
-                <div className="select-none pointer-events-none opacity-40">
-                  {index % 2 === 0 ? (
-                    <HeartDoodle size={24} className="text-current" />
-                  ) : (
-                    <SparklesDoodle size={24} className="text-current" />
-                  )}
-                </div>
+                {/* If card has image, show clear click hint button */}
+                {hasImage ? (
+                  <button
+                    type="button"
+                    onClick={() => openModal(currentMessage.image!)}
+                    className="font-mono text-[10px] text-accent hover:text-primary font-bold uppercase tracking-wider flex items-center space-x-1 cursor-pointer bg-card/80 px-2.5 py-1 rounded-md border border-accent/30 shadow-sm hover:border-accent transition-colors"
+                  >
+                    <ZoomIn size={12} />
+                    <span>Zoom Note ↗</span>
+                  </button>
+                ) : (
+                  <div className="select-none pointer-events-none opacity-40">
+                    {index % 2 === 0 ? (
+                      <HeartDoodle size={24} className="text-current" />
+                    ) : (
+                      <SparklesDoodle size={24} className="text-current" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -252,7 +312,7 @@ export const PeopleMessages = ({
         </div>
       )}
 
-      {/* Lightbox Modal rendered via Portal directly in document.body (identical to Memory Dialog) */}
+      {/* Lightbox Modal rendered via Portal directly in document.body with Interactive Zoom Controls */}
       {mounted && typeof document !== "undefined" && createPortal(
         <AnimatePresence>
           {selectedImage && (
@@ -261,54 +321,109 @@ export const PeopleMessages = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 select-none"
-              onClick={() => setSelectedImage(null)}
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 select-none"
+              onClick={closeModal}
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
                 transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                className="relative max-w-3xl w-full bg-[#FCFAF6] border-4 border-primary/40 p-5 sm:p-7 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto no-scrollbar paper-grain text-left"
+                className="relative max-w-4xl w-full bg-[#FCFAF6] border-4 border-primary/40 p-4 sm:p-7 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] paper-grain text-left"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Floating Close Button */}
-                <button
-                  type="button"
-                  className="absolute top-4 right-4 z-50 p-2 rounded-full bg-primary text-card hover:bg-accent hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg cursor-pointer flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-accent"
-                  onClick={() => setSelectedImage(null)}
-                  aria-label="Close dialog"
-                >
-                  <X size={20} className="stroke-[2.5]" />
-                </button>
+                {/* Floating Modal Header Controls */}
+                <div className="flex items-center justify-between pb-3 mb-2 border-b border-secondary/30">
+                  <div className="flex items-center space-x-2">
+                    <span className="bg-[#E8C96A]/25 text-[#6B4E2E] font-mono text-[9px] md:text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded font-black border border-[#E8C96A]/40">
+                      Teammate Note Preview
+                    </span>
+                    <span className="text-xs font-serif text-primary/70 font-bold hidden sm:inline">
+                      &bull; {currentMessage.sender}
+                    </span>
+                  </div>
 
-                {/* Lightbox Media */}
-                <div className="w-full max-h-[65vh] rounded-xl bg-black/5 border border-secondary/40 overflow-hidden flex items-center justify-center mb-4 relative">
-                  <img
-                    src={selectedImage}
-                    alt={`Message from ${currentMessage.sender}`}
-                    className="w-full h-auto max-h-[65vh] object-contain rounded-lg shadow-sm"
-                  />
+                  {/* Interactive Zoom Toolbar */}
+                  <div className="flex items-center space-x-1.5 bg-secondary/15 p-1 rounded-lg border border-secondary/30">
+                    <button
+                      type="button"
+                      onClick={() => setZoomScale((prev) => Math.max(prev - 0.5, 1))}
+                      disabled={zoomScale <= 1}
+                      className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white disabled:opacity-40 transition-colors cursor-pointer"
+                      title="Zoom Out (-)"
+                    >
+                      <ZoomOut size={15} />
+                    </button>
+                    
+                    <span className="font-mono text-xs font-bold text-primary px-2 min-w-[48px] text-center select-none">
+                      {Math.round(zoomScale * 100)}%
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setZoomScale((prev) => Math.min(prev + 0.5, 3.5))}
+                      disabled={zoomScale >= 3.5}
+                      className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white disabled:opacity-40 transition-colors cursor-pointer"
+                      title="Zoom In (+)"
+                    >
+                      <ZoomIn size={15} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setZoomScale(1)}
+                      className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white transition-colors cursor-pointer ml-1"
+                      title="Reset Zoom (100%)"
+                    >
+                      <RotateCcw size={14} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="p-1.5 rounded bg-primary text-card hover:bg-accent transition-colors cursor-pointer ml-2"
+                      title="Close (Esc)"
+                    >
+                      <X size={15} className="stroke-[2.5]" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Lightbox Metadata */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-secondary/30 pt-4">
-                  <div className="text-left space-y-1 max-w-xl">
-                    <div className="flex items-center space-x-2">
-                      <span className="bg-[#E8C96A]/25 text-[#6B4E2E] font-mono text-[9px] md:text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded font-black border border-[#E8C96A]/40">
-                        Teammate Note
-                      </span>
-                    </div>
-                    <h3 className="font-serif text-base md:text-lg font-bold text-primary">
-                      Personal Message &bull; {currentMessage.sender}
+                {/* Lightbox Media Viewport with Pan & Scroll Support */}
+                <div 
+                  className={`w-full max-h-[68vh] rounded-xl bg-black/5 border border-secondary/40 overflow-auto flex items-center justify-center p-2 sm:p-4 relative ${
+                    zoomScale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
+                  }`}
+                  onDoubleClick={() => setZoomScale((prev) => (prev === 1 ? 2 : 1))}
+                  title={zoomScale === 1 ? "Double click to zoom 2x" : "Double click to reset zoom"}
+                >
+                  <motion.div
+                    animate={{ scale: zoomScale }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="origin-center flex items-center justify-center w-full"
+                  >
+                    <img
+                      src={selectedImage}
+                      alt={`Message from ${currentMessage.sender}`}
+                      className="w-auto h-auto max-h-[64vh] object-contain rounded-lg shadow-sm select-none"
+                      draggable={false}
+                    />
+                  </motion.div>
+                </div>
+
+                {/* Lightbox Footer Info */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-secondary/30 pt-3 mt-2">
+                  <div className="text-left space-y-0.5">
+                    <h3 className="font-serif text-sm sm:text-base font-bold text-primary">
+                      {currentMessage.sender} &bull; <span className="text-xs text-primary/70 font-normal">{currentMessage.role}</span>
                     </h3>
-                    <p className="font-serif text-xs md:text-sm text-primary/80 leading-relaxed">
-                      {currentMessage.role}
+                    <p className="font-serif text-[11px] text-muted/60">
+                      Tip: Use the toolbar buttons or double-click to zoom in and out.
                     </p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => setSelectedImage(null)}
+                    onClick={closeModal}
                     className="self-start sm:self-center px-4 py-2 bg-secondary/20 hover:bg-accent hover:text-white text-primary rounded-lg font-serif text-xs uppercase tracking-wider font-bold transition-all duration-200 cursor-pointer flex-shrink-0"
                   >
                     Close Preview

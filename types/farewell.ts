@@ -48,7 +48,7 @@ export interface TeammateMessage {
   message?: string;
   image?: string;
   avatar: string;
-  color?: "yellow" | "blue" | "pink" | "green";
+  color?: "yellow" | "blue" | "pink" | "green" | "red" | "purple" | "orange" | string;
 }
 
 export interface InsideJoke {

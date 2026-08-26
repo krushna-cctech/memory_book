@@ -183,7 +183,7 @@ export const farewell: Farewell = {
       sender: "Pratik Patil",
       role: "BU Head - Autodesk",
       message:
-        "Riya has been a very pleasant personality from day 1. I remember her interview - I asked HR to hire immediately and asked directors not to delay for their availability.\nSince she joined, she did excellent in her day to day work, I have never heard a single complain about her. Not only her day to day work but she helped a lot on org level, she has a vert energetic aura. She was my one of the stops to discuss ideas or chit chat on the floor. A excellent, calm person. \nI wish you all the best dear Riya and may you get all the success for future, brace yourself for exciting future.\nAnd as you would have said, \"कुर्सी की पेटी बांध लीजिए\"!",
+        "Riya has been a very pleasant personality from day 1. I remember her interview - I asked HR to hire immediately and asked directors not to delay for their availability.\nSince she joined, she did excellent in her day to day work, I have never heard a single complain about her. Not only her day to day work but she helped a lot on org level, she has a vert energetic aura. She was my one of the stops to discuss ideas or chit chat on the floor. A excellent, calm person. \nI wish you all the best dear Riya and may you get all the success for future, brace yourself for exciting future.\nAnd as you would have said,\n \"कुर्सी की पेटी बांध लीजिए\"!",
       avatar: "PP",
       color: "yellow",
     },
@@ -200,14 +200,14 @@ export const farewell: Farewell = {
       id: "msg-3",
       sender: "Sagar Ladawa",
       role: "Senior Team Lead",
-      image: "/msgimg/shared image.png",
+      image: "/msgimg/sagar.png",
       avatar: "SL",
       color: "pink",
     },
     {
       id: "msg-4",
       sender: "Nikita Dhumal",
-      role: "Senior Member of Staff",
+      role: "Senior Member of Technical Staff",
       image: "/msgimg/Nikita.png",
       avatar: "ND",
       color: "green",
@@ -215,7 +215,7 @@ export const farewell: Farewell = {
     {
       id: "msg-5",
       sender: "Chetan Shavanti",
-      role: "Senior Member of Staff",
+      role: "Senior Member of Technical Staff",
       message: "Riya, it’s been such a pleasure working with you! You’ve been a wonderful colleague, always supportive, positive, and great to work with. Your presence will definitely be missed by the whole team. Wishing you all the very best for your next chapter—may it bring you lots of success, happiness, and exciting opportunities. Stay in touch, and keep shining! 🌟\n\nGood luck, Riya! 💐",
       avatar: "CS",
       color: "blue",
@@ -231,6 +231,14 @@ export const farewell: Farewell = {
     },
     {
       id: "msg-7",
+      sender: "Preeti Deshpande",
+      role: "Member of Technical Staff",
+      message: "Hi Riya, \nI have such mixed feelings right now. I’m genuinely happy and excited that you’re moving towards something bigger and better, but at the same time, it’s difficult to imagine that you won’t be here from tomorrow. I’m really going to miss you. ❤️\nIt’s actually very rare to find such genuinely good friends at the workplace. In corporate life, people come and go, do their work, and move on. But some people leave a much deeper impact—and you are definitely one of those people.\nYour behaviour towards everyone, your positivity, and the way you make people feel happy and motivated are truly special. Please never change that about yourself. ❤️\nI really hope we stay in touch, because I want people like you in my life forever—people with whom there are no expectations, no judgments, just a genuine and beautiful bond.\nWishing you nothing but the best for this new chapter. Go achieve bigger and better things! ✨\nAnd yes… please don’t become a “former colleague” who disappears! 😂❤️\nYou’ll always be a special friend to me. 🤗",
+      avatar: "PD",
+      color: "red",
+    },
+    {
+      id: "msg-8",
       sender: "Subhod Kumar",
       role: "Senior Member of Technical Staff",
       message: "Wishing you all the very best for your next chapter. May it bring you lots of success, happiness, and new opportunities. You'll definitely be missed!",
@@ -238,7 +246,7 @@ export const farewell: Farewell = {
       color: "blue",
     },
     {
-      id: "msg-8",
+      id: "msg-9",
       sender: "Priyanka Bhalekar",
       role: "Member of Technical Staff",
       message: "In just few months, you became someone much more special to me than I ever expected. You were never just a colleague—you became someone I could count on, someone who believed in me when I struggled to believe in myself. Thank you for always standing by me, pushing me forward, and giving me the emotional and moral support I needed. Your pure heart, gentle nature, and the way you never speak badly about anyone are things I truly admire about you. I will always cherish our conversations, our laughter, our little moments, and all the memories we created along the way. Your leaving makes me genuinely emotional, but I am also so happy and excited for everything that lies ahead for you. May you always receive the happiness, love, success, health and goodness that you deserve. Keep smiling, keep shining, and never stop being the beautiful soul that you are. You will truly be missed! ❤️",
@@ -246,7 +254,7 @@ export const farewell: Farewell = {
       color: "blue",
     },
     {
-      id: "msg-9",
+      id: "msg-10",
       sender: "Abhay Varkad",
       role: "Member of Technical Staff",
       message: "It was really nice working with you! Thank you for all the help, support, and good memories. Wishing you lots of success and happiness in your next chapter. All the best!",
@@ -254,7 +262,7 @@ export const farewell: Farewell = {
       color: "yellow",
     },
     {
-      id:"msg-10",
+      id:"msg-11",
       sender: "Krushna Wagh",
       role: "Member of Technical Staff",
       message: "Dear Riya, It was great working with you! You are such a positive and fun person to be around. I wish you all the very best for your future endeavors. \nKeep shining! ✨",

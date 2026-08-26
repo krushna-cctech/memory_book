@@ -12,7 +12,7 @@ import { Farewell } from "@/types/farewell";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Avatar } from "../avatar/Avatar";
 import { AvatarFrame } from "../avatar/AvatarFrame";
-import { HeartDoodle } from "../ui/Doodles";
+import { HeartDoodle, SparklesDoodle } from "../ui/Doodles";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Chapter page layouts
@@ -249,14 +249,58 @@ export const BookShell = ({ data }: BookShellProps) => {
         />
       )
     })),
-    // Page: Chapter 5 Goodbye Letter
+    // If messages count is odd, add Chapter 4 Closing Reflection so Chapter 4 ends cleanly on an even page, allowing Chapter 5 (Goodbye Envelope) to start on the LEFT page of a fresh spread!
+    ...((data.messages?.length || 0) % 2 !== 0 ? [{
+      id: "people-closing",
+      chapter: "people",
+      chapterNum: 4,
+      content: (
+        <div className="relative w-full max-w-xl mx-auto py-1 flex flex-col justify-between h-full select-none text-left">
+          <div>
+            <div className="mb-4 border-b border-secondary/30 pb-2.5">
+              <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-accent font-black">
+                Chapter 04 &bull; Reflections
+              </span>
+              <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
+                To Our Dear Teammate &amp; Friend
+              </h2>
+              <p className="font-serif text-xs md:text-sm text-primary/70 italic mt-0.5">
+                “Every message a testimony of how much you brought to our everyday work.”
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <div className="p-6 bg-[#FAF2DE] border-2 border-[#E8C96A]/60 rounded-2xl relative shadow-sm">
+                <div className="flex items-center space-x-2 text-accent mb-2">
+                  <SparklesDoodle size={20} />
+                  <span className="font-serif text-xs uppercase tracking-widest font-black text-[#6B4E2E]">
+                    A Team United in Warm Wishes
+                  </span>
+                </div>
+                <p className="font-handwritten text-lg md:text-xl text-[#4A3728] font-bold leading-relaxed mb-3">
+                  &ldquo;From late-night deployments and lively brainstorms to team celebrations and laughter, you leave an indelible mark on all of us. Thank you for your energy, kindness, and inspiration!&rdquo;
+                </p>
+                <div className="text-right font-serif text-[11px] uppercase tracking-wider text-[#6B4E2E] font-bold">
+                  ✦ Always Your Friends at AEC ✦
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-right pt-2.5 pr-2 text-[10px] md:text-xs font-serif text-accent/80 italic select-none">
+            Turn page for the Team Letter &rarr;
+          </div>
+        </div>
+      )
+    }] : []),
+    // Page: Chapter 5 Goodbye Letter (Now on the LEFT page of Spread 12!)
     ...(data.letter ? [{
       id: "goodbye",
       chapter: "goodbye",
       chapterNum: 5,
       content: <GoodbyeLetter data={data.letter} hideSignatures={true} />
     }] : []),
-    // Page: Signatures & Reflections
+    // Page: Signatures & Reflections (Now on the RIGHT page of Spread 12!)
     {
       id: "signatures",
       chapter: "signatures",

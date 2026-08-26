@@ -20,7 +20,6 @@ import { BeginningPage } from "./chapters/BeginningPage";
 import { JourneyTimeline } from "./chapters/JourneyTimeline";
 import { MemoriesGrid, MemoriesClosing } from "./chapters/MemoriesGrid";
 import { PeopleMessages } from "./chapters/PeopleMessages";
-import { InsideJokes } from "./chapters/InsideJokes";
 import { GoodbyeLetter } from "./chapters/GoodbyeLetter";
 
 interface BookShellProps {
@@ -250,25 +249,18 @@ export const BookShell = ({ data }: BookShellProps) => {
         />
       )
     })),
-    // Page: Chapter 5 Inside Jokes
-    ...(data.jokes ? [{
-      id: "inside-jokes",
-      chapter: "inside-jokes",
-      chapterNum: 5,
-      content: <InsideJokes jokes={data.jokes} />
-    }] : []),
-    // Page: Chapter 6 Goodbye Letter
+    // Page: Chapter 5 Goodbye Letter
     ...(data.letter ? [{
       id: "goodbye",
       chapter: "goodbye",
-      chapterNum: 6,
+      chapterNum: 5,
       content: <GoodbyeLetter data={data.letter} hideSignatures={true} />
     }] : []),
     // Page: Signatures & Reflections
     {
       id: "signatures",
       chapter: "signatures",
-      chapterNum: 6,
+      chapterNum: 5,
       content: (
         <div className="flex flex-col h-full justify-between relative select-none">
           <div className="text-center pt-2">
@@ -310,7 +302,7 @@ export const BookShell = ({ data }: BookShellProps) => {
         {
           id: "final-reflection",
           chapter: "signatures",
-          chapterNum: 6,
+          chapterNum: 5,
           content: <FinalReflectionPage />
         },
         baseInsidePages[baseInsidePages.length - 1]
@@ -439,7 +431,7 @@ export const BookShell = ({ data }: BookShellProps) => {
     if (activeMobilePageIndex > 0 && activeMobilePageIndex <= insidePages.length) {
       currentChapterNumber = insidePages[activeMobilePageIndex - 1]?.chapterNum || 1;
     } else if (activeMobilePageIndex > insidePages.length) {
-      currentChapterNumber = 6;
+      currentChapterNumber = 5;
     }
   } else {
     if (activeSpreadIndex > 0 && activeSpreadIndex < maxSpreadIndex) {
@@ -449,7 +441,7 @@ export const BookShell = ({ data }: BookShellProps) => {
         insidePages[rightPageIndex - 2]?.chapterNum ||
         1;
     } else if (activeSpreadIndex >= maxSpreadIndex) {
-      currentChapterNumber = 6;
+      currentChapterNumber = 5;
     }
   }
 

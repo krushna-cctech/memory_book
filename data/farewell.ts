@@ -44,14 +44,8 @@ export const farewell: Farewell = {
       shortTitle: "People",
     },
     {
-      id: "inside-jokes",
-      number: 5,
-      title: "Things Only We Understand",
-      shortTitle: "Inside Jokes",
-    },
-    {
       id: "goodbye",
-      number: 6,
+      number: 5,
       title: "Until We Meet Again",
       shortTitle: "Goodbye",
     },
@@ -267,32 +261,6 @@ export const farewell: Farewell = {
       avatar: "KW",
       color: "blue",
     }
-
-  ],
-
-  jokes: [
-    {
-      id: "j-1",
-      joke: "git commit -m 'fixing Riyaelza's typo before she sees it'",
-      context: "Found in a hidden project commit log from June 2023.",
-    },
-    {
-      id: "j-2",
-      joke: "“It works fine in my console, maybe your browser is just vintage.”",
-      context:
-        "Riyaelza's favorite response to a bug report during staging tests.",
-    },
-    {
-      id: "j-3",
-      joke: "The Great 'Tabs vs Spaces' Lockout",
-      context:
-        "When someone changed the prettier settings, she locked the main branch deployment for 6 hours until it was reverted.",
-    },
-    {
-      id: "j-4",
-      joke: "“No, I am not writing a script for that. It only takes me 3 seconds to click it 400 times.”",
-      context: "Overheard during an onboarding test sequence.",
-    },
   ],
 
   letter: {

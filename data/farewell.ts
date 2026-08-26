@@ -189,7 +189,7 @@ export const farewell: Farewell = {
       sender: "Pratik Patil",
       role: "BU Head - Autodesk",
       message:
-        "Riya has been a very pleasant personality from day 1. I remember her interview - I asked HR to hire immediately and asked directors not to delay for their availability.Since she joined, she did excellent in her day to day work, I have never heard a single complain about her. Not only her day to day work but she helped a lot on org level, she has a vert energetic aura. She was my one of the stops to discuss ideas or chit chat on the floor. A excellent, calm person. I wish you all the best dear Riya and may you get all the success for future, brace yourself for exciting future. And as you would have said, \"कुर्सी की पेटी बांध लीजिए\"!",
+        "Riya has been a very pleasant personality from day 1. I remember her interview - I asked HR to hire immediately and asked directors not to delay for their availability.\nSince she joined, she did excellent in her day to day work, I have never heard a single complain about her. Not only her day to day work but she helped a lot on org level, she has a vert energetic aura. She was my one of the stops to discuss ideas or chit chat on the floor. A excellent, calm person. \nI wish you all the best dear Riya and may you get all the success for future, brace yourself for exciting future.\nAnd as you would have said, \"कुर्सी की पेटी बांध लीजिए\"!",
       avatar: "PP",
       color: "yellow",
     },
@@ -198,7 +198,7 @@ export const farewell: Farewell = {
       sender: "Pradnya Jawale",
       role: "Project Manager",
       message:
-        "It has been wonderful working with you! Your communication skills, creativity, and the effort you put into everything you do have always stood out. A special thank you for your contribution to last year's organization-level branding initiative. And I must say, whenever you speak in English, it sometimes feels like we are about to hear an announcement from an air hostess - “Ladies and gentlemen, thank you for flying with us!” 😄 Your English and the way you communicate always sound so smooth, confident, and professional! You are always so easy to talk to, and I truly appreciate all the support and efforts you have given to the team. Wishing you lots of success, happiness, and exciting opportunities in your future journey. Keep shining and all the very best! 🌟",
+        "It has been wonderful working with you! Your communication skills, creativity, and the effort you put into everything you do have always stood out. A special thank you for your contribution to last year's organization-level branding initiative.\nAnd I must say, whenever you speak in English, it sometimes feels like we are about to hear an announcement from an air hostess  - “Ladies and gentlemen, thank you for flying with us!” 😄 Your English and the way you communicate always sound so smooth, confident, and professional!\nYou are always so easy to talk to, and I truly appreciate all the support and efforts you have given to the team. Wishing you lots of success, happiness, and exciting opportunities in your future journey. Keep shining and all the very best! 🌟",
       avatar: "PJ",
       color: "blue",
     },
@@ -206,20 +206,68 @@ export const farewell: Farewell = {
       id: "msg-3",
       sender: "Sagar Ladawa",
       role: "Senior Team Lead",
-      message:
-        "Thank you for being such an inspiring mentor. Your patience during my first week, guiding me through git issues and CSS configurations, meant everything. I'll miss our daily syncs, tea chats, and debugging huddles. You're going to crush it!",
+      image: "/msgimg/shared image.png",
       avatar: "SL",
       color: "pink",
     },
     {
       id: "msg-4",
-      sender: "Alex Rivers",
-      role: "VP of Engineering",
-      message:
-        "A true leader leads by example. Riyaelza, your impact on our engineering culture and architectural standards is permanent. Thank you for four years of dedication, brilliance, and team spirit.",
-      avatar: "AR",
+      sender: "Nikita Dhumal",
+      role: "Senior Member of Staff",
+      image: "/msgimg/Nikita.png",
+      avatar: "ND",
       color: "green",
     },
+    {
+      id: "msg-5",
+      sender: "Chetan Shavanti",
+      role: "Senior Member of Staff",
+      message: "Riya, it’s been such a pleasure working with you! You’ve been a wonderful colleague, always supportive, positive, and great to work with. Your presence will definitely be missed by the whole team. Wishing you all the very best for your next chapter—may it bring you lots of success, happiness, and exciting opportunities. Stay in touch, and keep shining! 🌟\n\nGood luck, Riya! 💐",
+      avatar: "CS",
+      color: "blue",
+    },
+    {
+      id: "msg-6",
+      sender: "Shruti Kulkarni",
+      role: "Senior Member of Technical Staff",
+      message:
+        "Hey Riya,\n\nI still remember the day we met. You are and were a very calm, confident and kind person. You showed interest in team and gelled with us that instant. Your lovely nature is what inspires me the most.\n\nYou’ve always been a support and a lovely friend who wishes good and spreads positivity all around. Your thoughtful sessions on team building and lovely Christmas cards on luck are one of a kind. I will definitely miss you!\n\nCongratulations and all the best for your future and may you find success in your life! 💖",
+      avatar: "SK",
+      color: "pink",
+    },
+    {
+      id: "msg-7",
+      sender: "Subhod Kumar",
+      role: "Senior Member of Technical Staff",
+      message: "Wishing you all the very best for your next chapter. May it bring you lots of success, happiness, and new opportunities. You'll definitely be missed!",
+      avatar: "SK",
+      color: "blue",
+    },
+    {
+      id: "msg-8",
+      sender: "Priyanka Bhalekar",
+      role: "Member of Technical Staff",
+      message: "In just few months, you became someone much more special to me than I ever expected. You were never just a colleague—you became someone I could count on, someone who believed in me when I struggled to believe in myself. Thank you for always standing by me, pushing me forward, and giving me the emotional and moral support I needed. Your pure heart, gentle nature, and the way you never speak badly about anyone are things I truly admire about you. I will always cherish our conversations, our laughter, our little moments, and all the memories we created along the way. Your leaving makes me genuinely emotional, but I am also so happy and excited for everything that lies ahead for you. May you always receive the happiness, love, success, health and goodness that you deserve. Keep smiling, keep shining, and never stop being the beautiful soul that you are. You will truly be missed! ❤️",
+      avatar: "PB",
+      color: "blue",
+    },
+    {
+      id: "msg-9",
+      sender: "Abhay Varkad",
+      role: "Member of Technical Staff",
+      message: "It was really nice working with you! Thank you for all the help, support, and good memories. Wishing you lots of success and happiness in your next chapter. All the best!",
+      avatar: "AV",
+      color: "yellow",
+    },
+    {
+      id:"msg-10",
+      sender: "Krushna Wagh",
+      role: "Member of Technical Staff",
+      message: "Dear Riya, It was great working with you! You are such a positive and fun person to be around. I wish you all the very best for your future endeavors. \nKeep shining! ✨",
+      avatar: "KW",
+      color: "blue",
+    }
+
   ],
 
   jokes: [

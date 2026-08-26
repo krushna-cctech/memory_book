@@ -25,20 +25,60 @@ export const PeopleMessages = ({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [zoomScale, setZoomScale] = useState<number>(1);
   const [mounted, setMounted] = useState(false);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Reset zoom scale whenever modal is opened/closed
+  // Reset zoom scale and scroll position whenever modal is opened/closed
   const openModal = (img: string) => {
     setZoomScale(1);
     setSelectedImage(img);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+      scrollContainerRef.current.scrollLeft = 0;
+    }
   };
 
   const closeModal = () => {
     setSelectedImage(null);
     setZoomScale(1);
+  };
+
+  const handleZoomChange = (newScale: number) => {
+    setZoomScale(newScale);
+    if (newScale === 1 && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+  };
+
+  // Drag-to-pan event handlers for mouse users
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomScale <= 1 || !scrollContainerRef.current) return;
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: scrollContainerRef.current.scrollLeft,
+      scrollTop: scrollContainerRef.current.scrollTop,
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    scrollContainerRef.current.scrollLeft = dragStart.scrollLeft - dx;
+    scrollContainerRef.current.scrollTop = dragStart.scrollTop - dy;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
   };
 
   // Lock scrolling and page flipping while dialog modal is active
@@ -56,9 +96,11 @@ export const PeopleMessages = ({
         e.stopPropagation();
         closeModal();
       } else if (e.key === "+" || e.key === "=") {
-        setZoomScale((prev) => Math.min(prev + 0.5, 3.5));
+        handleZoomChange(Math.min(Number((zoomScale + 0.1).toFixed(2)), 2.2));
       } else if (e.key === "-") {
-        setZoomScale((prev) => Math.max(prev - 0.5, 1));
+        handleZoomChange(Math.max(Number((zoomScale - 0.1).toFixed(2)), 1));
+      } else if (e.key === "0") {
+        handleZoomChange(1);
       } else if (
         ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", " "].includes(e.key)
       ) {
@@ -73,7 +115,7 @@ export const PeopleMessages = ({
       document.body.style.overflow = originalOverflow;
       document.body.style.touchAction = originalTouchAction;
     };
-  }, [selectedImage]);
+  }, [selectedImage, zoomScale]);
 
   // If a single message is passed, use it; otherwise pick from messages array
   const currentMessage: TeammateMessage | undefined =
@@ -169,9 +211,9 @@ export const PeopleMessages = ({
               Note {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}
             </span>
           </div>
-          {/* <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
+          <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
             Personal Note &bull; {currentMessage.sender}
-          </h2> */}
+          </h2>
           <p className="font-serif text-xs md:text-sm text-primary/70 italic mt-0.5">
             “Heartfelt messages, memories, and warm wishes from your teammates.”
           </p>
@@ -312,7 +354,7 @@ export const PeopleMessages = ({
         </div>
       )}
 
-      {/* Lightbox Modal rendered via Portal directly in document.body with Interactive Zoom Controls */}
+      {/* Lightbox Modal rendered via Portal directly in document.body with Interactive Zoom & Unrestricted Scrolling */}
       {mounted && typeof document !== "undefined" && createPortal(
         <AnimatePresence>
           {selectedImage && (
@@ -329,11 +371,11 @@ export const PeopleMessages = ({
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
                 transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                className="relative max-w-4xl w-full bg-[#FCFAF6] border-4 border-primary/40 p-4 sm:p-7 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] paper-grain text-left"
+                className="relative max-w-4xl w-full bg-[#FCFAF6] border-4 border-primary/40 p-4 sm:p-6 rounded-2xl shadow-2xl flex flex-col max-h-[94vh] paper-grain text-left"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Floating Modal Header Controls */}
-                <div className="flex items-center justify-between pb-3 mb-2 border-b border-secondary/30">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-2 border-b border-secondary/30">
                   <div className="flex items-center space-x-2">
                     <span className="bg-[#E8C96A]/25 text-[#6B4E2E] font-mono text-[9px] md:text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded font-black border border-[#E8C96A]/40">
                       Teammate Note Preview
@@ -343,37 +385,72 @@ export const PeopleMessages = ({
                     </span>
                   </div>
 
-                  {/* Interactive Zoom Toolbar */}
+                  {/* Interactive Zoom Toolbar with Slider and Fine Controls */}
                   <div className="flex items-center space-x-1.5 bg-secondary/15 p-1 rounded-lg border border-secondary/30">
                     <button
                       type="button"
-                      onClick={() => setZoomScale((prev) => Math.max(prev - 0.5, 1))}
+                      onClick={() => handleZoomChange(Math.max(Number((zoomScale - 0.1).toFixed(2)), 1))}
                       disabled={zoomScale <= 1}
                       className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white disabled:opacity-40 transition-colors cursor-pointer"
-                      title="Zoom Out (-)"
+                      title="Zoom Out (-10%)"
                     >
                       <ZoomOut size={15} />
                     </button>
                     
-                    <span className="font-mono text-xs font-bold text-primary px-2 min-w-[48px] text-center select-none">
-                      {Math.round(zoomScale * 100)}%
-                    </span>
+                    {/* Interactive Zoom Slider */}
+                    <div className="flex items-center space-x-1.5 px-1.5">
+                      <input
+                        type="range"
+                        min="100"
+                        max="220"
+                        step="5"
+                        value={Math.round(zoomScale * 100)}
+                        onChange={(e) => handleZoomChange(Number(e.target.value) / 100)}
+                        className="w-16 sm:w-24 accent-accent h-1.5 bg-secondary/30 rounded-lg cursor-pointer"
+                        title={`Zoom: ${Math.round(zoomScale * 100)}% (Drag to adjust)`}
+                      />
+                      <span className="font-mono text-xs font-bold text-primary min-w-[42px] text-center select-none">
+                        {Math.round(zoomScale * 100)}%
+                      </span>
+                    </div>
 
                     <button
                       type="button"
-                      onClick={() => setZoomScale((prev) => Math.min(prev + 0.5, 3.5))}
-                      disabled={zoomScale >= 3.5}
+                      onClick={() => handleZoomChange(Math.min(Number((zoomScale + 0.1).toFixed(2)), 2.2))}
+                      disabled={zoomScale >= 2.2}
                       className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white disabled:opacity-40 transition-colors cursor-pointer"
-                      title="Zoom In (+)"
+                      title="Zoom In (+10%)"
                     >
                       <ZoomIn size={15} />
                     </button>
 
+                    {/* Quick Preset Zoom Chips */}
+                    <div className="hidden sm:flex items-center space-x-1 pl-1 border-l border-secondary/30">
+                      {[
+                        { label: "Fit", value: 1.0 },
+                        { label: "125%", value: 1.25 },
+                        { label: "150%", value: 1.5 },
+                      ].map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => handleZoomChange(preset.value)}
+                          className={`px-1.5 py-0.5 text-[10px] font-mono font-bold rounded transition-colors cursor-pointer ${
+                            Math.abs(zoomScale - preset.value) < 0.05
+                              ? "bg-accent text-white"
+                              : "bg-card/70 text-primary hover:bg-card"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+
                     <button
                       type="button"
-                      onClick={() => setZoomScale(1)}
-                      className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white transition-colors cursor-pointer ml-1"
-                      title="Reset Zoom (100%)"
+                      onClick={() => handleZoomChange(1)}
+                      className="p-1.5 rounded bg-card text-primary hover:bg-accent hover:text-white transition-colors cursor-pointer ml-0.5"
+                      title="Reset Zoom to Fit (100%)"
                     >
                       <RotateCcw size={14} />
                     </button>
@@ -381,7 +458,7 @@ export const PeopleMessages = ({
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="p-1.5 rounded bg-primary text-card hover:bg-accent transition-colors cursor-pointer ml-2"
+                      className="p-1.5 rounded bg-primary text-card hover:bg-accent transition-colors cursor-pointer ml-1"
                       title="Close (Esc)"
                     >
                       <X size={15} className="stroke-[2.5]" />
@@ -389,26 +466,47 @@ export const PeopleMessages = ({
                   </div>
                 </div>
 
-                {/* Lightbox Media Viewport with Pan & Scroll Support */}
+                {/* Lightbox Media Viewport with Pan, Drag, and Full Unrestricted 4-Way Scroll to Top/Bottom/Left/Right */}
                 <div 
-                  className={`w-full max-h-[68vh] rounded-xl bg-black/5 border border-secondary/40 overflow-auto flex items-center justify-center p-2 sm:p-4 relative ${
+                  ref={scrollContainerRef}
+                  className={`w-full h-[70vh] rounded-xl bg-black/5 border border-secondary/40 overflow-auto relative ${
                     zoomScale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
                   }`}
-                  onDoubleClick={() => setZoomScale((prev) => (prev === 1 ? 2 : 1))}
-                  title={zoomScale === 1 ? "Double click to zoom 2x" : "Double click to reset zoom"}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onDoubleClick={() => handleZoomChange(zoomScale === 1 ? 1.3 : 1)}
+                  title={zoomScale === 1 ? "Double click to zoom 130%" : "Double click to reset zoom"}
                 >
-                  <motion.div
-                    animate={{ scale: zoomScale }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="origin-center flex items-center justify-center w-full"
+                  <div
+                    className="min-w-full min-h-full flex items-start justify-center p-3 sm:p-6"
+                    style={{
+                      width: zoomScale > 1 ? `${zoomScale * 100}%` : "100%",
+                      minHeight: zoomScale > 1 ? `${zoomScale * 100}%` : "100%",
+                    }}
                   >
                     <img
                       src={selectedImage}
                       alt={`Message from ${currentMessage.sender}`}
-                      className="w-auto h-auto max-h-[64vh] object-contain rounded-lg shadow-sm select-none"
+                      className="object-contain rounded-lg shadow-sm select-none transition-[width] duration-200 m-auto"
+                      style={
+                        zoomScale > 1
+                          ? {
+                              width: "100%",
+                              height: "auto",
+                              maxHeight: "none",
+                            }
+                          : {
+                              width: "auto",
+                              height: "auto",
+                              maxHeight: "64vh",
+                              maxWidth: "100%",
+                            }
+                      }
                       draggable={false}
                     />
-                  </motion.div>
+                  </div>
                 </div>
 
                 {/* Lightbox Footer Info */}
@@ -418,7 +516,7 @@ export const PeopleMessages = ({
                       {currentMessage.sender} &bull; <span className="text-xs text-primary/70 font-normal">{currentMessage.role}</span>
                     </h3>
                     <p className="font-serif text-[11px] text-muted/60">
-                      Tip: Use the toolbar buttons or double-click to zoom in and out.
+                      Tip: Scroll or drag to move anywhere. Use buttons or double-click to zoom.
                     </p>
                   </div>
                   <button

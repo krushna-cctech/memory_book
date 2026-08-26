@@ -169,9 +169,9 @@ export const PeopleMessages = ({
               Note {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}
             </span>
           </div>
-          <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
+          {/* <h2 className="font-serif text-lg md:text-xl font-black text-primary tracking-wide mt-0.5">
             Personal Note &bull; {currentMessage.sender}
-          </h2>
+          </h2> */}
           <p className="font-serif text-xs md:text-sm text-primary/70 italic mt-0.5">
             “Heartfelt messages, memories, and warm wishes from your teammates.”
           </p>

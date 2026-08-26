@@ -183,7 +183,7 @@ export const farewell: Farewell = {
       sender: "Pratik Patil",
       role: "BU Head - Autodesk",
       message:
-        "Riya has been a very pleasant personality from day 1. I remember her interview - I asked HR to hire immediately and asked directors not to delay for their availability.\nSince she joined, she did excellent in her day to day work, I have never heard a single complain about her. Not only her day to day work but she helped a lot on org level, she has a vert energetic aura. She was my one of the stops to discuss ideas or chit chat on the floor. A excellent, calm person. \nI wish you all the best dear Riya and may you get all the success for future, brace yourself for exciting future.\nAnd as you would have said, \"कुर्सी की पेटी बांध लीजिए\"!",
+        "Riya has been a very pleasant personality from day 1. I remember her interview - I asked HR to hire immediately and asked directors not to delay for their availability.\nSince she joined, she did excellent in her day to day work, I have never heard a single complain about her. Not only her day to day work but she helped a lot on org level, she has a vert energetic aura. She was my one of the stops to discuss ideas or chit chat on the floor. A excellent, calm person. \nI wish you all the best dear Riya and may you get all the success for future, brace yourself for exciting future.\nAnd as you would have said,\n \"कुर्सी की पेटी बांध लीजिए\"!",
       avatar: "PP",
       color: "yellow",
     },

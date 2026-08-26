@@ -6,7 +6,7 @@ export const farewell: Farewell = {
   teammate: {
     id: "teammate-001",
     name: "Riyaelza Pappachen",
-    role: "Member of Technical Staff (MTS)",
+    role: "Senior Member of Technical Staff (SMTS)",
     department: "AEC - Architecture, Engineering and Construction",
     avatar: "/avatars/placeholder-avatar.png",
     joiningYear: 2024,

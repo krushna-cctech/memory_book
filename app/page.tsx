@@ -140,7 +140,7 @@ export default function Home() {
             {/* 2. Artistic Dedication Tags */}
             <motion.div variants={shouldReduceMotion ? {} : fadeUp(0.55)} className="space-y-1 select-none">
               <h2 className="font-handwritten text-3xl text-primary rotate-[-1.5deg]">
-                Four years.
+                A little over 2 years.
               </h2>
               <p className="font-handwritten text-2xl text-accent rotate-[1.5deg] mt-0.5">
                 Countless memories.

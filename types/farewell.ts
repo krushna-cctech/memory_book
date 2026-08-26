@@ -59,7 +59,7 @@ export interface InsideJoke {
 
 export interface GoodbyeLetterData {
   salutation: string;
-  paragraphs: string[];
+  paragraphs?: string[];
   valediction: string;
   signatures: string[];
   image?: string;

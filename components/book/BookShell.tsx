@@ -270,17 +270,27 @@ export const BookShell = ({ data }: BookShellProps) => {
             </div>
 
             <div className="space-y-4 pt-2">
-              <div className="p-6 bg-[#FAF2DE] border-2 border-[#E8C96A]/60 rounded-2xl relative shadow-sm">
-                <div className="flex items-center space-x-2 text-accent mb-2">
+              <div className="p-5 sm:p-6 bg-[#FAF2DE] border-2 border-[#E8C96A]/60 rounded-2xl relative shadow-sm">
+                <div className="flex items-center space-x-2 text-accent mb-3">
                   <SparklesDoodle size={20} />
                   <span className="font-serif text-xs uppercase tracking-widest font-black text-[#6B4E2E]">
                     A Team United in Warm Wishes
                   </span>
                 </div>
-                <p className="font-handwritten text-lg md:text-xl text-[#4A3728] font-bold leading-relaxed mb-3">
-                  &ldquo;From late-night deployments and lively brainstorms to team celebrations and laughter, you leave an indelible mark on all of us. Thank you for your energy, kindness, and inspiration!&rdquo;
-                </p>
-                <div className="text-right font-serif text-[11px] uppercase tracking-wider text-[#6B4E2E] font-bold">
+                
+                <div className="space-y-3 font-handwritten text-[15px] sm:text-base md:text-[16px] text-[#4A3728] font-bold leading-relaxed">
+                  <p>
+                    &ldquo;Two years may not sound like a very long time, but you’ve managed to leave behind a lot of great memories. From taking ownership of every responsibility to happily stepping up whenever there was an event to host, you’ve always been someone the team could count on. And then there were the Fun Fridays where somehow you managed to come up with something new and creative every month and gave us all a reason to forget about work for a while! 😄
+                  </p>
+                  <p>
+                    You brought a lot of positivity, energy, and warmth to the team, and your presence will definitely be missed. Thank you for all the little moments, the laughs, the fun, and for simply being you. We’re really glad we got to share these two years with you. ❤️
+                  </p>
+                  <p>
+                    Keep smiling, keep creating, and please don’t stop organizing Fun Fridays wherever you go! 😄✨&rdquo;
+                  </p>
+                </div>
+
+                <div className="text-right font-serif text-[11px] uppercase tracking-wider text-[#6B4E2E] font-bold mt-4 pt-2 border-t border-[#E8C96A]/30">
                   ✦ Always Your Friends at AEC ✦
                 </div>
               </div>

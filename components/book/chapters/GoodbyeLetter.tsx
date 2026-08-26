@@ -226,11 +226,11 @@ export const GoodbyeLetter = ({ data, hideSignatures = false }: GoodbyeLetterPro
                   onClick={() => openModal(data.image!)}
                   title="Click to Zoom / View in Fullscreen"
                 >
-                  <div className="w-full max-h-[260px] overflow-hidden flex items-center justify-center bg-black/5 rounded-lg">
+                  <div className={`w-full ${data.paragraphs?.length ? "max-h-[260px]" : "max-h-[380px]"} overflow-hidden flex items-center justify-center bg-black/5 rounded-lg`}>
                     <img
                       src={data.image}
                       alt="Team Message Note"
-                      className="w-full h-auto max-h-[260px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                      className={`w-full h-auto ${data.paragraphs?.length ? "max-h-[260px]" : "max-h-[380px]"} object-contain transition-transform duration-300 group-hover:scale-[1.02]`}
                       loading="lazy"
                     />
                   </div>
@@ -253,12 +253,14 @@ export const GoodbyeLetter = ({ data, hideSignatures = false }: GoodbyeLetterPro
                 </div>
               )}
 
-              {/* Paragraphs */}
-              <div className="space-y-2.5 text-xs md:text-sm leading-relaxed text-primary/95 text-justify">
-                {data.paragraphs.map((p, idx) => (
-                  <p key={idx}>{p}</p>
-                ))}
-              </div>
+              {/* Paragraphs (rendered only if present) */}
+              {data.paragraphs && data.paragraphs.length > 0 && (
+                <div className="space-y-2.5 text-xs md:text-sm leading-relaxed text-primary/95 text-justify">
+                  {data.paragraphs.map((p, idx) => (
+                    <p key={idx}>{p}</p>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-3 pt-3 border-t border-secondary/30 relative">
                 <p className="font-serif text-sm italic text-primary/80 mb-2 select-none">

@@ -137,17 +137,17 @@ export const MemoriesGrid = ({
           </p>
         </div>
 
-        {/* 2 Memories per page (Vertical Polaroid Cards) */}
+        {/* 2 Memories per page (Side-by-Side Vertical Polaroid Cards) */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={shouldReduceMotion ? {} : staggerContainer(0.08, 0.05)}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full py-1"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full py-1"
         >
           {displayMemories.map((item, localIndex) => {
             const index = startIndex + localIndex;
-            const rotations = ["rotate-[-1.5deg]", "rotate-[1.5deg]", "rotate-[-1deg]", "rotate-[1deg]"];
+            const rotations = ["rotate-[-1.2deg]", "rotate-[1.2deg]", "rotate-[-0.8deg]", "rotate-[0.8deg]"];
             const rotationClass = shouldReduceMotion ? "" : rotations[localIndex % rotations.length];
             const hasMedia = !!(item.image || item.video);
 
@@ -156,7 +156,7 @@ export const MemoriesGrid = ({
                 key={item.id}
                 variants={shouldReduceMotion ? {} : fadeUp(0.4, 12)}
                 className={`w-full flex relative pt-3 ${
-                  displayMemories.length === 1 ? "sm:col-span-2 sm:max-w-md sm:mx-auto" : ""
+                  displayMemories.length === 1 ? "sm:col-span-2 sm:max-w-[280px] sm:mx-auto" : ""
                 }`}
               >
                 {/* Tape Doodle on top of Polaroid */}
@@ -169,24 +169,24 @@ export const MemoriesGrid = ({
 
                 <Card
                   variant="polaroid"
-                  className={`w-full text-left flex flex-col justify-between ${rotationClass} border-2 border-secondary/50 bg-card/90 shadow-sm hover:rotate-0 hover:scale-[1.02] transform transition-all duration-300 relative p-3.5 pb-4 cursor-zoom-in`}
+                  className={`w-full text-left flex flex-col justify-between ${rotationClass} border-2 border-secondary/50 bg-card/95 shadow-sm hover:rotate-0 hover:scale-[1.02] transform transition-all duration-300 relative p-3 sm:p-3.5 pb-3.5 cursor-zoom-in group min-h-[420px]`}
                   onClick={() => setSelectedMemory(item)}
                 >
                   <div className="w-full flex flex-col h-full justify-between">
                     <div>
                       {/* Header: category & index */}
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="flex justify-between items-center mb-1.5">
                         <Badge variant="accent" className="font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 font-black">
                           {item.category}
                         </Badge>
-                        <span className="text-xs text-muted/40 font-serif font-black" aria-hidden="true">
+                        <span className="text-xs text-muted/50 font-serif font-black" aria-hidden="true">
                           #0{index + 1}
                         </span>
                       </div>
 
                       {/* Vertical Media Display on Top */}
                       {item.video && (
-                        <div className="relative w-full aspect-[4/3] rounded-lg bg-secondary/15 overflow-hidden mb-2.5 border border-secondary/35 group select-none">
+                        <div className="relative w-full aspect-[4/3] rounded-lg bg-black/5 overflow-hidden mb-2 border border-secondary/35 group select-none">
                           <video
                             src={item.video}
                             className="w-full h-full object-cover"
@@ -195,8 +195,8 @@ export const MemoriesGrid = ({
                             playsInline
                             autoPlay
                           />
-                          <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span className="bg-card/95 text-primary text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded shadow-sm border border-secondary/40 font-bold">
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span className="bg-card/95 text-primary text-[9px] uppercase font-mono tracking-wider px-2 py-0.5 rounded shadow-sm border border-secondary/40 font-bold">
                               Play Video
                             </span>
                           </div>
@@ -207,15 +207,15 @@ export const MemoriesGrid = ({
                       )}
 
                       {item.image && !item.video && (
-                        <div className="relative w-full aspect-[4/3] rounded-lg bg-secondary/15 overflow-hidden mb-2.5 border border-secondary/35 group select-none">
+                        <div className="relative w-full aspect-[4/3] rounded-lg bg-black/5 overflow-hidden mb-2 border border-secondary/35 group select-none">
                           <img
                             src={item.image}
                             alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="w-full h-full object-cover object-top sm:object-center transition-transform duration-500 group-hover:scale-105"
                             loading="lazy"
                           />
-                          <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span className="bg-card/95 text-primary text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded shadow-sm border border-secondary/40 font-bold">
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span className="bg-card/95 text-primary text-[9px] uppercase font-mono tracking-wider px-2 py-0.5 rounded shadow-sm border border-secondary/40 font-bold">
                               Zoom Photo
                             </span>
                           </div>
@@ -223,16 +223,17 @@ export const MemoriesGrid = ({
                       )}
 
                       {/* Text Below Media */}
-                      <h3 className="font-serif text-sm sm:text-base font-bold text-primary mb-1 leading-snug">
+                      <h3 className="font-serif text-sm font-bold text-primary mb-1 leading-snug">
                         {item.title}
                       </h3>
-                      <p className="font-serif text-xs md:text-[13px] text-primary/80 leading-relaxed">
+                      <p className="font-serif text-[11px] sm:text-xs text-primary/80 leading-relaxed">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="pt-2.5 text-[9px] font-mono text-accent font-bold uppercase tracking-wider select-none flex items-center space-x-1 border-t border-secondary/20 mt-2">
+                    <div className="pt-2 text-[9px] font-mono text-accent font-bold uppercase tracking-wider select-none flex items-center justify-between border-t border-secondary/20 mt-2">
                       <span>✦ Click to preview</span>
+                      <span className="text-muted/40 text-[9px] group-hover:text-accent">Zoom ↗</span>
                     </div>
                   </div>
                 </Card>
